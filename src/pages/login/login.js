@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, PixelRatio, ImageBackground } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { Toast } from '../../base/Toast';
-
-
+import { fetchRequest } from '../../services/httpServices';
+import axios from 'axios';
 export default class Login extends Component {
   componentDidMount() {
     Orientation.lockToLandscape();
@@ -12,39 +12,65 @@ export default class Login extends Component {
     if (!this.state.username || !this.state.password) {
       Toast.show('用户名或者密码不能为空');
     }
+    fetch('http://10.6.181.71:8000/api/loginService')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        //return responseJson.movies;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    /* fetch("https://api.douban.com/v2/book/1220562")
+      .then((response) => response.json())
+      .then((responseData) => {
+        console.log(responseData);
+      }) */
+    /* fetchRequest('api/loginService', 'GET').then(res => {
+      if (res.status) {
+        console.log(res.statusInfo.message);
+      }
+    }) */
   }
   constructor() {
     super();
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      showCancel: false
     }
   }
   render() {
-    return (
-      <ImageBackground source={require('../../assets/img/bg.jpg')} style={styles.container}>
-        <View style={styles.inner}>
-          <Text style={styles.title}>湖北省河道采砂违法案件管理信息系统</Text>
-          <View>
-            <TextInput style={[styles.input, styles.username]}
-              placeholder="请输入用户名"
-              underlineColorAndroid='transparent'
-              onChangeText={(text) => this.setState({ username: text })} />
+    return this._renderCance();
+  }
+  _renderCance = () => {
+    if (!this.state.showCancel) {
+      return (
+        <ImageBackground source={require('../../assets/img/bg.jpg')} style={styles.container}>
+          <View style={styles.inner}>
+            <Text style={styles.title}>湖北省河道采砂违法案件管理信息系统</Text>
+            <View>
+              <TextInput style={[styles.input, styles.username]}
+                placeholder="请输入用户名"
+                underlineColorAndroid='transparent'
+                onChangeText={(text) => this.setState({ username: text })} />
+            </View>
+            <View style={{ height: 1 / PixelRatio.get(), backgroundColor: '#c4c4c4' }} />
+            <View>
+              <TextInput style={[styles.input, styles.password]}
+                placeholder="密码" password={true}
+                underlineColorAndroid='transparent'
+                onChangeText={(password) => this.setState({ password })}></TextInput>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={this.login}>
+              <Text style={{ color: '#fff', fontSize: 14 }}>登录</Text>
+            </TouchableOpacity>
           </View>
-          <View style={{ height: 1 / PixelRatio.get(), backgroundColor: '#c4c4c4' }} />
-          <View>
-            <TextInput style={[styles.input, styles.password]}
-              placeholder="密码" password={true}
-              underlineColorAndroid='transparent'
-              onChangeText={(password) => this.setState({ password })}></TextInput>
-          </View>
-
-          <TouchableOpacity style={styles.button} onPress={this.login}>
-            <Text style={{ color: '#fff', fontSize: 14 }}>登录</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-    );
+        </ImageBackground>
+      )
+    } else {
+      return null;
+    }
   }
 }
 
