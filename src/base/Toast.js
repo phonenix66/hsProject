@@ -20,19 +20,15 @@ const Toast = {
   },
   showSuccess: (msg, options) => {
     let toast = RootToast.show(
-      Platform.OS === 'ios' ?
-        <View style={StyleSheet.container}>
-          <Icon size={50} name='check' color={'#fff'}></Icon>
-          <Text style={styles.message}>{msg}</Text>
-        </View> : msg, {
-        duration: 1500,
+      <Text style={styles.message}>{msg}</Text>, {
+        duration: 2000,
         position: RootToast.positions.CENTER,
-        ...options
+        ...options,
       })
     setTimeout(function () {
-      RootToast.hide(toast);
-      typeof 'options' === 'function' ? options && options() : null
-    }, 2000)
+      RootToast.hide(toast)
+      typeof options === 'function' ? options && options() : null
+    }, 4000)
   },
   showLongSuccess: (msg, options) => {
     let toast = RootToast.show(
@@ -50,7 +46,7 @@ const Toast = {
       typeof options === 'function' ? options && options() : null
     }, 2500)
   },
-  showWarning: () => {
+  showWarning: (msg, options) => {
     let toast = RootToast.show(
       Platform.OS === 'ios' ?
         <View style={styles.container}>
@@ -65,7 +61,7 @@ const Toast = {
       RootToast.hide(toast)
     }, RootToast.durations.SHORT + 500)
   },
-  showError: () => {
+  showError: (msg, options) => {
     let toast = RootToast.show(
       Platform.OS === 'ios' ?
         <View style={styles.container}>

@@ -1,4 +1,4 @@
-const baseUrl = 'http://10.6.181.71:8000/';
+const baseUrl = 'http://10.8.133.113:8000/';
 const token = '';
 
 /**

@@ -5,13 +5,16 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "dev": "puer -a _mockserver.js"
+    "dev": "puer -a _mockserver.js",
+    "react-devtools": "react-devtools",
+    "postinstall": "rndebugger-open"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-preset-react-native": "^4.0.0",
+    "moment": "^2.22.2",
     "native-base": "^2.7.2",
     "react": "16.4.1",
     "react-native": "^0.55.4",
@@ -33,6 +36,8 @@
     "eslint-plugin-react": "^7.10.0",
     "jest": "23.4.2",
     "puer-mock": "^1.2.3",
+    "react-devtools": "^3.2.3",
+    "react-native-debugger-open": "^0.3.17",
     "react-test-renderer": "16.4.1"
   },
   "jest": {

@@ -885,12 +885,42 @@
                 "route": "GET /api/queryUser"
             }
         },
-        "GET /api/loginService": {
+        "POST /api/loginService": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "*username": "admin",
+                    "*password": "123"
+                }
+            },
             "response": {
                 "status": 0,
                 "statusInfo": {
                     "message": "登录成功"
                 }
+            }
+        },
+        "POST /api/statisticsList": {
+            "request": {},
+            "response": {
+                "status": 0,
+                "statusInfo": {
+                    "message": "ok"
+                },
+                "body|10-20": [
+                    {
+                        "id": "@id",
+                        "guid": "@guid",
+                        "index": "@increment",
+                        "name": "@cname",
+                        "lnumber": "@integer(10, 100)",
+                        "timeLimit": "@integer(1471491895528, 1481491895528)",
+                        "typeShip": "@ctitle",
+                        "owner": "@ctitle"
+                    }
+                ]
             }
         }
     }

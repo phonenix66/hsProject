@@ -2,43 +2,49 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, PixelRatio, ImageBackground } from 'react-native';
 import Orientation from 'react-native-orientation';
 import { Toast } from '../../base/Toast';
+import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
-import axios from 'axios';
+
+import Button from '../../base/Button';
+
 export default class Login extends Component {
+  static navigationOptions = {
+    header: null
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+      showCancel: false
+    }
+  }
   componentDidMount() {
     Orientation.lockToLandscape();
   }
   login = () => {
     if (!this.state.username || !this.state.password) {
       Toast.show('用户名或者密码不能为空');
+      return;
     }
-    fetch('http://10.6.181.71:8000/api/loginService')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-        //return responseJson.movies;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    /* fetch("https://api.douban.com/v2/book/1220562")
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log(responseData);
-      }) */
-    /* fetchRequest('api/loginService', 'GET').then(res => {
-      if (res.status) {
-        console.log(res.statusInfo.message);
+    Loading.show();
+    fetchRequest('api/loginService', 'POST', {
+      username: this.state.username,
+      password: this.state.password
+    }).then((res) => {
+      if (res.status === 0) {
+        Loading.hidden();
+        this.setState({ showCancel: true });
       }
-    }) */
+    }).catch(err => {
+      console.log(err);
+    })
   }
-  constructor() {
-    super();
-    this.state = {
-      username: '',
-      password: '',
-      showCancel: false
-    }
+  toA = () => {
+    this.props.navigation.navigate('Home');
+  }
+  toB = () => {
+
   }
   render() {
     return this._renderCance();
@@ -63,13 +69,25 @@ export default class Login extends Component {
                 onChangeText={(password) => this.setState({ password })}></TextInput>
             </View>
             <TouchableOpacity style={styles.button} onPress={this.login}>
-              <Text style={{ color: '#fff', fontSize: 14 }}>登录</Text>
+              <Text style={{ color: '#fff', fontSize: 13 }}>登录</Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
       )
     } else {
-      return null;
+      return (
+        <ImageBackground source={require('../../assets/img/bg.jpg')} style={styles.container}>
+          <View style={styles.inner}>
+            <Text style={styles.title}>入口选择</Text>
+          </View>
+          <View style={styles.inner}>
+            <Button text="选项A" onPress={this.toA}></Button>
+          </View>
+          <View style={styles.inner}>
+            <Button text="选项B"></Button>
+          </View>
+        </ImageBackground>
+      );
     }
   }
 }
@@ -81,16 +99,17 @@ const styles = StyleSheet.create({
     height: null,
     alignItems: 'center',
     justifyContent: 'center',
-    //resizeMode: Image.resizeMode.cover
   },
   inner: {
-
+    width: '50%',
+    marginTop: 20
   },
   title: {
     fontSize: 15,
     color: '#0d6ba9',
     marginTop: -50,
     marginBottom: 30,
+    textAlign: 'center'
   },
   input: {
     borderColor: '#19a2f3',
