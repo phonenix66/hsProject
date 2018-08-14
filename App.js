@@ -16,7 +16,7 @@ const RootStack = createStackNavigator({
   Details: {
     screen: DetailsScreen
   },
-  initialRouteName: 'Home'
+  initialRouteName: 'Login'
 })
 
 export default class App extends React.Component {

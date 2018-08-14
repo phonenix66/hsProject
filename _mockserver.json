@@ -918,7 +918,13 @@
                         "lnumber": "@integer(10, 100)",
                         "timeLimit": "@integer(1471491895528, 1481491895528)",
                         "typeShip": "@ctitle",
-                        "owner": "@ctitle"
+                        "owner": "@city",
+                        "money": "@float(0, 100, 2, 2)",
+                        "passCard": "鄂准采证字[2015]第@index 号",
+                        "address": "@province@city@county",
+                        "workPower": "@float(0, 1000, 2, 2)",
+                        "coordinate": "@float(0, 100, 2, 2),@float(0, 100, 2, 2)",
+                        "supervision": "@province"
                     }
                 ]
             }

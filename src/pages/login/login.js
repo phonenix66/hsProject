@@ -81,7 +81,7 @@ export default class Login extends Component {
             <Text style={styles.title}>入口选择</Text>
           </View>
           <View style={styles.inner}>
-            <Button text="选项A" onPress={this.toA}></Button>
+            <Button text="河道采砂许可项目统计" onPress={this.toA}></Button>
           </View>
           <View style={styles.inner}>
             <Button text="选项B"></Button>
