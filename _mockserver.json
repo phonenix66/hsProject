@@ -924,9 +924,26 @@
                         "address": "@province@city@county",
                         "workPower": "@float(0, 1000, 2, 2)",
                         "coordinate": "@float(0, 100, 2, 2),@float(0, 100, 2, 2)",
-                        "supervision": "@province"
+                        "supervision": "@province",
+                        "mistake": "@boolean()",
+                        "dutyPersonName": "@cname",
+                        "phone": "13677775555"
                     }
                 ]
+            }
+        },
+        "POST /api/saveData": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json"
+                },
+                "body": {}
+            },
+            "response": {
+                "status": 0,
+                "statusInfo": {
+                    "message": "保存成功"
+                }
             }
         }
     }

@@ -45,5 +45,5 @@ function fetchRequest(serviceName, method, params = '') {
     })
   }
 }
-
-exports.fetchRequest = fetchRequest;
+export { fetchRequest }
+//exports.fetchRequest = fetchRequest;

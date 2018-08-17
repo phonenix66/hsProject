@@ -3,10 +3,14 @@ import { YellowBox } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import HomeScreen from './src/pages/home/home';
 import { DetailsScreen } from './src/pages/details/details';
+import NewSite from './src/pages/details/newSite';
 import Login from './src/pages/login/login';
 
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 const RootStack = createStackNavigator({
+  NewSite: {
+    screen: NewSite
+  },
   Home: {
     screen: HomeScreen
   },
@@ -16,7 +20,8 @@ const RootStack = createStackNavigator({
   Details: {
     screen: DetailsScreen
   },
-  initialRouteName: 'Login'
+
+  initialRouteName: 'NewSite'
 })
 
 export default class App extends React.Component {

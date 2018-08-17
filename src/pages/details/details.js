@@ -92,11 +92,11 @@ export class DetailsScreen extends React.Component {
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂业主有无违规采砂行为</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.name}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.mistake ? '有' : '无'}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>现场监管责任人（人名及电话）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.name}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.name}：{data.phone}</Text>
           </View>
         </ScrollView>
       </View>
