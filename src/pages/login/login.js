@@ -44,7 +44,7 @@ export default class Login extends Component {
     this.props.navigation.navigate('Home');
   }
   toB = () => {
-
+    this.props.navigation.navigate('Main');
   }
   render() {
     return this._renderCance();
@@ -84,7 +84,7 @@ export default class Login extends Component {
             <Button text="河道采砂许可项目统计" onPress={this.toA}></Button>
           </View>
           <View style={styles.inner}>
-            <Button text="选项B"></Button>
+            <Button text="河道采砂违法案件管理系统" onPress={this.toB}></Button>
           </View>
         </ImageBackground>
       );
