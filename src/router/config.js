@@ -10,7 +10,12 @@ import JudgePage from '../pages/anjian/laws/judge';
 import NewCasePage from '../pages/anjian/case/newCase';
 import CaseListPage from '../pages/anjian/case/caseList';
 
+import SearchListPage from '../pages/anjian/search/list';
+
 const router = {
+  Home: {
+    screen: HomeScreen
+  },
   Main: {
     screen: MainPage
   },
@@ -20,9 +25,7 @@ const router = {
   NewSite: {
     screen: NewSite
   },
-  Home: {
-    screen: HomeScreen
-  },
+
   Details: {
     screen: DetailsScreen
   },
@@ -46,7 +49,10 @@ const router = {
   CaseList: {
     screen: CaseListPage
   },
-  initialRouteName: 'Main'
+  SearchList: {
+    screen: SearchListPage
+  },
+  initialRouteName: 'Home'
 }
 
 export { router };

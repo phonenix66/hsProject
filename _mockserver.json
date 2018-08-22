@@ -915,8 +915,10 @@
                         "guid": "@guid",
                         "index": "@increment",
                         "name": "@cname",
+                        "riverName": "@ctitle(5)",
                         "lnumber": "@integer(10, 100)",
-                        "timeLimit": "@integer(1471491895528, 1481491895528)",
+                        "timeLimitStart": "@integer(1471491895528, 1481491895528)",
+                        "timeLimitEnd": "@integer(1571491895528, 1581491895528)",
                         "typeShip": "@ctitle",
                         "owner": "@city",
                         "money": "@float(0, 100, 2, 2)",
@@ -943,6 +945,20 @@
                 "status": 0,
                 "statusInfo": {
                     "message": "保存成功"
+                }
+            }
+        },
+        "POST /api/deleteItem": {
+            "request": {
+                "header": {
+                    "Content-Type": "application/json"
+                },
+                "body": {}
+            },
+            "response": {
+                "status": 0,
+                "statusInfo": {
+                    "message": "删除成功"
                 }
             }
         }

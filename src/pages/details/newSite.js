@@ -11,6 +11,7 @@ import Button from '../../base/Button';
 import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
 import DatePicker from 'react-native-datepicker';
+import moment from 'moment';
 const width = Dimensions.get('window').width;
 export default class NewSite extends Component {
 
@@ -38,25 +39,27 @@ export default class NewSite extends Component {
   }
   constructor(props) {
     super(props);
+    this.navParams = this.props.navigation.state.params.data;
+    //console.log(this.navParams);
     this.state = {
-      name: '',
-      riverName: '',
-      passCard: '',
-      lnumber: '',
-      address: '',
-      timeLimitStart: '',
-      timeLimitEnd: '',
-      typeShip: '',
-      workPower: '',
-      owner: '',
-      coordinate: '',
-      money: '',
-      supervision: '',//监管
-      mistake: 0,
-      dutyPersonName: '',
-      phone: '',
-      //data: this.props.navigation.state.params.data
+      name: this.navParams ? this.navParams.name : '',
+      riverName: this.navParams ? this.navParams.riverName : '',
+      passCard: this.navParams ? this.navParams.passCard : '',
+      lnumber: this.navParams ? this.navParams.lnumber.toString() : '',
+      address: this.navParams ? this.navParams.address : '',
+      timeLimitStart: this.navParams ? (this.navParams.timeLimitStart) : '',
+      timeLimitEnd: this.navParams ? (this.navParams.timeLimitEnd) : '',
+      typeShip: this.navParams ? this.navParams.typeShip : '',
+      workPower: this.navParams ? this.navParams.workPower.toString() : '',
+      owner: this.navParams ? this.navParams.owner : '',
+      coordinate: this.navParams ? this.navParams.coordinate : '',
+      money: this.navParams ? this.navParams.money.toString() : '',
+      supervision: this.navParams ? this.navParams.supervision : '',//监管
+      mistake: this.navParams ? this.navParams.mistake : false,
+      dutyPersonName: this.navParams ? this.navParams.dutyPersonName : '',
+      phone: this.navParams ? this.navParams.phone : ''
     }
+
     //console.log(this.props.navigation.state.params.data);
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.navigation.pop();
@@ -64,11 +67,11 @@ export default class NewSite extends Component {
     });
   }
   _toggleSwitch = () => {
-    if (this.state.mistake === 0) {
-      this.setState({ mistake: 1 })
-    } else {
-      this.setState({ mistake: 0 })
-    }
+    this.setState(prevState => {
+      return {
+        mistake: !prevState.mistake
+      }
+    })
   }
   render() {
     return (
@@ -79,68 +82,65 @@ export default class NewSite extends Component {
               <Fumi
                 label={'采砂项目名称'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.name}
                 onChangeText={(text) => { this.setState({ name: text }) }}
               />
               <Fumi
                 style={styles.input}
                 label={'河流名称'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
+                iconSize={15}
+                value={this.state.riverName}
                 onChangeText={(text) => { this.setState({ riverName: text }) }}
               />
               <Fumi
                 label={'许可证编号'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.passCard}
                 onChangeText={(text) => { this.setState({ passCard: text }) }}
               />
               <Fumi
                 label={'许可采量（万吨/m³）'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.lnumber}
                 onChangeText={(text) => { this.setState({ lnumber: text }) }}
               />
               <Fumi
                 label={'许可具体地点'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.address}
                 onChangeText={(text) => { this.setState({ address: text }) }}
               />
-              {/* <Fumi
-                label={'许可期限'}
-                labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
-                iconClass={FontAwesomeIcon}
-                iconName={'university'}
-                iconColor={'#0079cc'}
-                iconSize={15}
-              /> */}
               <View>
                 <Text style={styles.limitTitle}>许可期限</Text>
                 <View style={styles.limitSelect}>
                   <DatePicker
                     style={{ width: 180, marginTop: 6, marginRight: 10, }}
-                    date={this.state.timeLimitStart}
+                    date={this.state.timeLimitStart ? moment(this.state.timeLimitStart) : ''}
                     mode="date"
                     androidMode="spinner"
                     placeholder="许可期限开始"
@@ -159,7 +159,7 @@ export default class NewSite extends Component {
                   />
                   <DatePicker
                     style={{ width: 180, marginTop: 6, marginRight: 10, }}
-                    date={this.state.timeLimitEnd}
+                    date={this.state.timeLimitEnd ? moment(this.state.timeLimitEnd) : ''}
                     mode="date"
                     androidMode="spinner"
                     placeholder="许可期限结束"
@@ -183,101 +183,99 @@ export default class NewSite extends Component {
               <Fumi
                 label={'许可船舶'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.typeShip}
                 onChangeText={(text) => { this.setState({ typeShip: text }) }}
               />
               <Fumi
                 label={'采砂功率（KW）'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.workPower}
                 onChangeText={(text) => { this.setState({ workPower: text }) }}
               />
               <Fumi
                 label={'采砂业主'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.owner}
                 onChangeText={(text) => { this.setState({ owner: text }) }}
               />
               <Fumi
                 label={'坐标'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.coordinate}
                 onChangeText={(text) => { this.setState({ coordinate: text }) }}
               />
               <Fumi
                 label={'砂石资源矿业权出让收益征收（万元）'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.money}
                 onChangeText={(text) => { this.setState({ money: text }) }}
               />
               <Fumi
                 label={'现场监管单位'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.supervision}
                 onChangeText={(text) => { this.setState({ supervision: text }) }}
               />
-              {/* <Fumi
-                label={'采砂业主有无违规采砂行为'}
-                labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
-                iconClass={FontAwesomeIcon}
-                iconName={'university'}
-                iconColor={'#0079cc'}
-                iconSize={15}
-                onChangeText={(text) => { this.setState({ mistake: text }) }}
-              /> */}
               <View style={styles.switchWrap}>
                 <Text style={styles.labelTxt}>采砂业主有无违规采砂行为</Text>
                 <Switch
                   onValueChange={this._toggleSwitch}
-                  value={this.state.mistake === 0 ? false : true}
+                  value={this.state.mistake}
                 />
                 <Text style={styles.labelTxt}>
-                  {this.state.mistake === 0 ? '无' : '有'}
+                  {this.state.mistake === false ? '无' : '有'}
                 </Text>
               </View>
               <Fumi
                 label={'现场监管责任人'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.dutyPersonName}
                 onChangeText={(text) => { this.setState({ dutyPersonName: text }) }}
               />
               <Fumi
                 label={'现场监管责任人电话'}
                 labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#0079cc', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
+                value={this.state.phone}
                 onChangeText={(text) => { this.setState({ phone: text }) }}
               />
               <View style={styles.footer}>

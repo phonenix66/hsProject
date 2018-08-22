@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image, Alert } from 'react-native';
 import { fetchRequest } from '../../services/httpServices';
 import moment from 'moment';
 import ActionButton from 'react-native-action-button';
-/* import Icon from 'C:/Users/zyp-l/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/react-native-vector-icons/Ionicons'; */
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../base/Loading';
 
@@ -34,19 +33,14 @@ export default class HomeScreen extends React.Component {
   }
   constructor(props) {
     super(props);
-    //this.props.navigation.state.
     this.state = {
       data: [],
       total: 0,
-      moneyAll: 0
+      moneyAll: 0,
+      showAction: false,
+      selectItem: null
     }
   }
-
-  /* goback() {
-    const { navigate, goBack, state } = this.props.navigation;
-    state.params.callback();
-    this.props.navigation.goBack();
-  } */
 
   componentDidMount() {
     fetchRequest('api/statisticsList', 'POST')
@@ -65,34 +59,15 @@ export default class HomeScreen extends React.Component {
         console.log(err);
       })
   }
-  _renderList = ({ item }) => {
-    return (
-      <TouchableOpacity onPress={() => this.transDetails({ item })}>
-        <View style={styles.top}>
-          <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.index || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.name || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.lnumber || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.timeLimit || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.typeShip || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.owner || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.money || ''}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    )
+
+  showActionSelect = (item) => {
+    //console.log(item);
+    this.setState(prevState => {
+      return {
+        selectItem: item,
+        showAction: !prevState.showAction
+      }
+    })
   }
   _setIndex = (item, index) => {
     return item.index.toString()
@@ -102,22 +77,40 @@ export default class HomeScreen extends React.Component {
       data: item
     });
   }
-  transNewSite = () => {
+  transNewSite = (flag) => {
     this.props.navigation.navigate('NewSite', {
-      getSaveData: this.getSaveData.bind(this)
+      getSaveData: this.getSaveData.bind(this),
+      data: !flag ? this.state.selectItem : null
     });
+  }
+  deleteItem = () => {
+
+    if (this.state.selectItem && this.state.showAction) {
+      const itemId = this.state.selectItem.id;
+      Alert.alert(
+        '提示',
+        '确定要删除此项许可',
+        [
+          {
+            text: '取消', onPress: () => { },
+            text: '确定', onPress: () => {
+              Loading.show();
+              fetchRequest('api/deleteItem', 'POST', { id: itemId })
+                .then(res => {
+                  Loading.hidden();
+                  console.log(res);
+                }).catch(err => {
+                  console.log(err);
+                })
+            }
+          }
+        ]
+      )
+
+    }
   }
   /*保存返回调用*/
   getSaveData(value) {
-    //console.log(value);
-    /* this.setState(function (prevState, props) {
-      let [...prevData] = prevState.data;
-      prevData.push(value);
-      console.log(prevData);
-      return {
-        data: []
-      }
-    }) */
     Loading.show();
     fetchRequest('api/statisticsList', 'POST')
       .then(res => {
@@ -134,7 +127,48 @@ export default class HomeScreen extends React.Component {
         })
       })
   }
-
+  resetActionButton = () => {
+    this.setState(prevState => {
+      if (prevState.showAction) {
+        return {
+          selectItem: null,
+          showAction: false
+        }
+      }
+    })
+  }
+  _renderList = ({ item }) => {
+    return (
+      <TouchableOpacity onPress={() => this.showActionSelect(item)}>
+        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.id === item.id) ? styles.selected : null]}>
+          <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.index || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.name || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.lnumber || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{moment(item.timeLimitStart).format('YYYY-MM-DD') || ''}</Text>
+            <Text style={styles.bItem}>
+              {'至' + moment(item.timeLimitEnd).format('YYYY-MM-DD') || ''}
+            </Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.typeShip || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.owner || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.money || ''}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -164,14 +198,26 @@ export default class HomeScreen extends React.Component {
         <View style={styles.body}>
           <FlatList
             data={this.state.data}
+            extraData={this.state}
             renderItem={this._renderList}
             keyExtractor={this._setIndex} removeClippedSubviews disableVirtualization>
           </FlatList>
           {/* Rest of the app comes ABOVE the action button component !*/}
           <ActionButton buttonColor="rgba(231,76,60,1)"
-            size={34} active={false} position="right" offsetX={10} offsetY={20}>
-            <ActionButton.Item buttonColor='#9b59b6' onPress={this.transNewSite}>
-              <Icon name="md-create" style={styles.actionButtonIcon} />
+            size={26} active={this.state.showAction}
+            resetToken={() => this.resetActionButton()}
+            position="right"
+            onReset={() => this.resetActionButton()}
+            offsetX={10} offsetY={20} spacing={14}
+          >
+            <ActionButton.Item buttonColor='#00BFFF' onPress={() => this.transNewSite(true)}>
+              <Icon name="md-add" style={styles.actionButtonIcon} />
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#9b59b6' onPress={() => this.transNewSite(false)}>
+              <Icon name="md-create" style={styles.actionButtonIcon}></Icon>
+            </ActionButton.Item>
+            <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
+              <Icon name="md-trash" style={styles.actionButtonIcon}></Icon>
             </ActionButton.Item>
             <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
               <Icon name="md-download" style={styles.actionButtonIcon} />
@@ -218,23 +264,20 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'stretch',
+    backgroundColor: '#e0ebfd'
   },
   textIndex: {
     flex: 1
   },
   textWrap: {
     flex: 2,
-    //height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e0ebfd',
     borderBottomWidth: 1,
     borderRightWidth: 1,
     borderColor: '#bfd6ff',
   },
   topItem: {
-    //flex: 1,
-    //width: '100%',
     fontSize: 10,
     textAlign: 'center',
     justifyContent: 'center',
@@ -249,11 +292,10 @@ const styles = StyleSheet.create({
     width: 330,
     height: 330,
     borderRadius: 15,
-    backgroundColor: 'red'
   },
   actionButtonIcon: {
-    fontSize: 20,
-    height: 22,
+    fontSize: 14,
+    height: 16,
     color: 'white'
   },
   footer: {
@@ -265,8 +307,7 @@ const styles = StyleSheet.create({
   textViewWrap: {
     borderBottomWidth: 1,
     borderRightWidth: 1,
-    borderColor: '#e2e2e2',
-    backgroundColor: '#fff'
+    borderColor: '#e2e2e2'
   },
   bItem: {
     fontSize: 10,
@@ -274,5 +315,11 @@ const styles = StyleSheet.create({
   },
   textBlue: {
     color: '#0366d6'
+  },
+  selected: {
+    backgroundColor: '#dcdcdc'
+  },
+  itemBg: {
+    backgroundColor: '#fff'
   }
 })

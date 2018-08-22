@@ -23,12 +23,12 @@
     {
       "icon": "../../assets/img/icon1.png",
       "title": "案件上报",
-      "name": "NewCase"
+      "name": "CaseList"
     },
     {
       "icon": "../../assets/img/icon1.png",
       "title": "案件查询",
-      "name": "CaseList"
+      "name": "SearchList"
     },
     {
       "icon": "../../assets/img/icon1.png",
