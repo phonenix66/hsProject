@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import {
   View, Text, TouchableOpacity, StyleSheet, Image, Dimensions,
-  FlatList
+  FlatList, Alert
 } from 'react-native';
 import { fetchRequest } from '../../../services/httpServices';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Loading } from '../../../base/Loading';
+import PageListView from 'react-native-page-listview';
+
 const width = Dimensions.get('window').width;
 export default class CaseListPage extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -33,7 +36,9 @@ export default class CaseListPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      selectItem: null,
+      showAction: false
     }
   }
   componentDidMount() {
@@ -44,6 +49,80 @@ export default class CaseListPage extends Component {
           data: res.body
         })
       })
+  }
+  pageToEdit = (flag) => {
+    if (flag) {
+      this.props.navigation.navigate('NewCase')
+    } else {
+      if (!this.state.selectItem) {
+        this.alertTips();
+        return;
+      }
+      this.props.navigation.navigate('NewCase', {
+        data: this.state.selectItem
+      })
+    }
+  }
+  alertTips() {
+    Alert.alert(
+      '提示',
+      '请先选择一条案件',
+      [
+        { text: '确定', onPress: () => { } }
+      ]);
+  }
+  pageToDetail = () => {
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
+    }
+    this.props.navigation.navigate('CaseDetails', {
+      data: this.state.selectItem
+    })
+  }
+  deleteItem = () => {
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
+    }
+    const itemId = this.state.selectItem.id;
+    Alert.alert(
+      '提示',
+      '确定要删除此项许可',
+      [
+        { text: '取消', onPress: () => { }, style: 'cancel' },
+        {
+          text: '确定', onPress: () => {
+            Loading.show();
+            fetchRequest('api/deleteItem', 'POST', { id: itemId })
+              .then(res => {
+                Loading.hidden();
+                console.log(res);
+              }).catch(err => {
+                console.log(err);
+              })
+          }
+        }
+      ]
+    )
+  }
+  resetActionButton = () => {
+    this.setState(prevState => {
+      if (prevState.showAction) {
+        return {
+          selectItem: null,
+          showAction: false
+        }
+      }
+    })
+  }
+  showActionSelect = (item) => {
+    this.setState(prevState => {
+      return {
+        selectItem: item,
+        showAction: !prevState.showAction
+      }
+    })
   }
   render() {
     return (
@@ -72,28 +151,51 @@ export default class CaseListPage extends Component {
           </View>
         </View>
         <View style={styles.body}>
-          <FlatList
+          {/* <FlatList
             data={this.state.data}
+            extraData={this.state}
             renderItem={this._renderList}
             keyExtractor={this._setIndex} removeClippedSubviews disableVirtualization>
-          </FlatList>
-          <ActionButton buttonColor="rgba(231,76,60,1)"
-            size={34} active={false} position="right" offsetX={10} offsetY={20}>
-            <ActionButton.Item buttonColor='#9b59b6' onPress={() => { }}>
-              <Icon name="md-create" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
-              <Icon name="md-download" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-          </ActionButton>
+          </FlatList> */}
+          <PageListView
+            pageLen={15}
+            extraData={this.state}
+            renderRow={this._renderList}
+            refresh={this._refresh}
+            loadMore={this._loadMore}
+          ></PageListView>
         </View>
+        <ActionButton buttonColor="rgba(231,76,60,1)"
+          size={30} active={this.state.showAction} position="right"
+          offsetX={10} offsetY={20} spacing={6}
+          resetToken={() => this.resetActionButton()}
+          onReset={() => this.resetActionButton()}>
+          <ActionButton.Item buttonColor='#00BFFF' onPress={() => { this.pageToEdit(true) }}>
+            <Icon name="md-add" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#9b59b6' onPress={() => { this.pageToEdit(false) }}>
+            <Icon name="md-create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3CB371' onPress={this.pageToDetail}>
+            <Icon name="md-eye" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
+            <Icon name="md-trash" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#FFA500' onPress={() => { }}>
+            <Icon name="md-arrow-round-up" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
+            <Icon name="md-download" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     )
   }
-  _renderList = ({ item }) => {
+  _renderList = (item, index) => {
     return (
-      <TouchableOpacity onPress={() => this.transDetails({ item })}>
-        <View style={styles.top}>
+      <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
+        <View style={[styles.top, styles.itemBg, (this.state.showAction && this.state.selectItem.id === item.id) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>
@@ -101,10 +203,10 @@ export default class CaseListPage extends Component {
             <Text style={styles.bItem}>{item.name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.lnumber || ''}</Text>
+            <Text style={styles.bItem}>{item.address || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.timeLimit || ''}</Text>
+            <Text style={styles.bItem}>{item.timeLimitStart || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.typeShip || ''}</Text>
@@ -125,6 +227,43 @@ export default class CaseListPage extends Component {
   transDetails = (item) => {
     this.props.navigation.navigate('NewCase', {
       data: item
+    })
+  }
+  _refresh = (callBack) => {
+    fetchRequest('api/statisticsList', 'POST', {
+      page: 1,
+      name: 'admin'
+    })
+      .then(res => {
+        this.setState({ data: res.body });
+        let total = 0, moneyAll = 0;
+        res.body.forEach(item => {
+          total += item.lnumber;
+          moneyAll += item.money;
+        })
+        this.setState({
+          total: total,
+          moneyAll: moneyAll
+        })
+        callBack(res.body);
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+  _loadMore = (page = 2, callBack) => {
+    fetchRequest('api/statisticsList', 'POST', {
+      page: page,
+      name: 'admin'
+    }).then(res => {
+      if (res.status === 0) {
+        callBack(res.body);
+        this.setState(prevState => {
+          return {
+            data: prevState.data.concat(res.body),
+          }
+        })
+      }
+
     })
   }
 }
@@ -150,6 +289,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'stretch',
+    backgroundColor: '#e0ebfd',
   },
   textIndex: {
     flex: 1
@@ -159,7 +299,6 @@ const styles = StyleSheet.create({
     //height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e0ebfd',
     borderBottomWidth: 1,
     borderRightWidth: 1,
     borderColor: '#bfd6ff',
@@ -188,4 +327,19 @@ const styles = StyleSheet.create({
     height: 22,
     color: 'white'
   },
+  textViewWrap: {
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#e2e2e2'
+  },
+  bItem: {
+    fontSize: 10,
+    color: '#3f3f3f'
+  },
+  selected: {
+    backgroundColor: '#dcdcdc'
+  },
+  itemBg: {
+    backgroundColor: '#fff'
+  }
 })

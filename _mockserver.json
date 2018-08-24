@@ -909,7 +909,7 @@
                 "statusInfo": {
                     "message": "ok"
                 },
-                "body|10-20": [
+                "body|15": [
                     {
                         "id": "@id",
                         "guid": "@guid",

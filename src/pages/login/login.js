@@ -28,10 +28,11 @@ export default class Login extends Component {
       return;
     }
     Loading.show();
-    fetchRequest('api/loginService', 'POST', {
+    fetchRequest('rest/login', 'POST', {
       username: this.state.username,
       password: this.state.password
     }).then((res) => {
+      console.log(res);
       if (res.status === 0) {
         Loading.hidden();
         this.setState({ showCancel: true });

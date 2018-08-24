@@ -1,5 +1,5 @@
 import HomeScreen from '../pages/home/home';
-import { DetailsScreen } from '../pages/details/details';
+import DetailsScreen from '../pages/details/details';
 import NewSite from '../pages/details/newSite';
 import Login from '../pages/login/login';
 import MainPage from '../pages/anjian/main';
@@ -9,15 +9,14 @@ import PenalPage from '../pages/anjian/laws/penal';
 import JudgePage from '../pages/anjian/laws/judge';
 import NewCasePage from '../pages/anjian/case/newCase';
 import CaseListPage from '../pages/anjian/case/caseList';
-
 import SearchListPage from '../pages/anjian/search/list';
-
+import CaseDetailsPage from '../pages/anjian/case/details';
 const router = {
-  Home: {
-    screen: HomeScreen
-  },
   Main: {
     screen: MainPage
+  },
+  Home: {
+    screen: HomeScreen
   },
   Login: {
     screen: Login
@@ -25,7 +24,6 @@ const router = {
   NewSite: {
     screen: NewSite
   },
-
   Details: {
     screen: DetailsScreen
   },
@@ -49,10 +47,14 @@ const router = {
   CaseList: {
     screen: CaseListPage
   },
+  CaseDetails: {
+    screen: CaseDetailsPage
+  },
+  /*案件查询*/
   SearchList: {
     screen: SearchListPage
   },
-  initialRouteName: 'Home'
+  initialRouteName: 'Main'
 }
 
 export { router };

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
-
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/Ionicons';
 const width = Dimensions.get('window').width;
 
 
@@ -24,8 +25,24 @@ export default class SearchListPage extends Component {
             <Image source={require('../../../assets/img/back.png')} style={{ width: 20, height: 20 }} />
           </View>
         </TouchableOpacity>
+      ),
+      headerRight: (
+        <TouchableOpacity onPress={navigation.getParam('showSearchModal')}>
+          <View style={styles.searchButton}>
+            <Icon name="md-search" style={styles.actionButtonIcon}></Icon>
+          </View>
+        </TouchableOpacity>
       )
     }
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      isModalVisible: false
+    }
+  }
+  componentDidMount() {
+    this.props.navigation.setParams({ showSearchModal: this._toggleModal });
   }
   render() {
     return (
@@ -52,12 +69,41 @@ export default class SearchListPage extends Component {
           <View style={styles.textWrap}>
             <Text style={styles.topItem}>罚款数额(万元)</Text>
           </View>
+          <View style={styles.textWrap}>
+            <Text style={styles.topItem}>结案日期</Text>
+          </View>
         </View>
         <View style={styles.body}>
 
         </View>
+        <Modal isVisible={this.state.isModalVisible}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>输入查询条件</Text>
+            </View>
+            <View style={styles.modalBody}></View>
+            <View style={styles.modalFooter}>
+              <View style={styles.modalWrapper}>
+                <TouchableOpacity onPress={this._toggleModal}
+                  style={[styles.modalFooterButton, styles.modalRightLine]}>
+                  <View>
+                    <Text>取消</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={this._toggleModal} style={styles.modalFooterButton}>
+                  <View>
+                    <Text>查询</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
+  }
+  _toggleModal = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
   }
 }
 const styles = StyleSheet.create({
@@ -115,9 +161,53 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: 'red'
   },
+  searchButton: {
+    width: 50,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   actionButtonIcon: {
     fontSize: 20,
-    height: 22,
+    //height: 22,
     color: 'white'
   },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 4,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
+  modalHeader: {
+    padding: 5,
+    borderBottomWidth: 0.5,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
+  modalTitle: {
+    fontSize: 14,
+  },
+  modalBody: {
+    padding: 10,
+  },
+  modalFooter: {
+    height: 30,
+    width: '100%'
+  },
+  modalWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  modalRightLine: {
+    borderRightWidth: 0.5,
+    borderColor: "rgba(0, 0, 0, 0.1)"
+  },
+  modalFooterButton: {
+    flex: 1,
+    borderTopWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    backgroundColor: '#ffffff',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  }
 })

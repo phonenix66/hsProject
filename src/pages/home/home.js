@@ -5,7 +5,7 @@ import moment from 'moment';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../base/Loading';
-
+import PageListView from 'react-native-page-listview';
 export default class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -43,7 +43,7 @@ export default class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    fetchRequest('api/statisticsList', 'POST')
+    /* fetchRequest('api/statisticsList', 'POST')
       .then(res => {
         this.setState({ data: res.body });
         let total = 0, moneyAll = 0;
@@ -55,13 +55,14 @@ export default class HomeScreen extends React.Component {
           total: total,
           moneyAll: moneyAll
         })
+        callBack(res.body);
       }).catch(err => {
         console.log(err);
-      })
+      }) */
   }
 
   showActionSelect = (item) => {
-    //console.log(item);
+    console.log(item);
     this.setState(prevState => {
       return {
         selectItem: item,
@@ -73,6 +74,8 @@ export default class HomeScreen extends React.Component {
     return item.index.toString()
   }
   transDetails = (item) => {
+    console.log(item);
+    if (!item) return;
     this.props.navigation.navigate('Details', {
       data: item
     });
@@ -84,7 +87,6 @@ export default class HomeScreen extends React.Component {
     });
   }
   deleteItem = () => {
-
     if (this.state.selectItem && this.state.showAction) {
       const itemId = this.state.selectItem.id;
       Alert.alert(
@@ -106,7 +108,6 @@ export default class HomeScreen extends React.Component {
           }
         ]
       )
-
     }
   }
   /*保存返回调用*/
@@ -137,7 +138,7 @@ export default class HomeScreen extends React.Component {
       }
     })
   }
-  _renderList = ({ item }) => {
+  _renderList = (item, index) => {
     return (
       <TouchableOpacity onPress={() => this.showActionSelect(item)}>
         <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.id === item.id) ? styles.selected : null]}>
@@ -169,6 +170,50 @@ export default class HomeScreen extends React.Component {
       </TouchableOpacity>
     )
   }
+  _refresh = (callBack) => {
+    fetchRequest('api/statisticsList', 'POST', {
+      page: 1,
+      name: 'admin'
+    })
+      .then(res => {
+        this.setState({ data: res.body });
+        let total = 0, moneyAll = 0;
+        res.body.forEach(item => {
+          total += item.lnumber;
+          moneyAll += item.money;
+        })
+        this.setState({
+          total: total,
+          moneyAll: moneyAll
+        })
+        callBack(res.body);
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+  _loadMore = (page = 2, callBack) => {
+    fetchRequest('api/statisticsList', 'POST', {
+      page: page,
+      name: 'admin'
+    }).then(res => {
+      if (res.status === 0) {
+        let total = 0, moneyAll = 0;
+        res.body.forEach(item => {
+          total += item.lnumber;
+          moneyAll += item.money;
+        })
+        callBack(res.body);
+        this.setState(prevState => {
+          return {
+            data: prevState.data.concat(res.body),
+            total: prevState.total + total,
+            moneyAll: prevState.moneyAll + moneyAll
+          }
+        })
+      }
+
+    })
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -196,33 +241,19 @@ export default class HomeScreen extends React.Component {
           </View>
         </View>
         <View style={styles.body}>
-          <FlatList
+          {/* <FlatList
             data={this.state.data}
             extraData={this.state}
             renderItem={this._renderList}
             keyExtractor={this._setIndex} removeClippedSubviews disableVirtualization>
-          </FlatList>
-          {/* Rest of the app comes ABOVE the action button component !*/}
-          <ActionButton buttonColor="rgba(231,76,60,1)"
-            size={26} active={this.state.showAction}
-            resetToken={() => this.resetActionButton()}
-            position="right"
-            onReset={() => this.resetActionButton()}
-            offsetX={10} offsetY={20} spacing={14}
-          >
-            <ActionButton.Item buttonColor='#00BFFF' onPress={() => this.transNewSite(true)}>
-              <Icon name="md-add" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#9b59b6' onPress={() => this.transNewSite(false)}>
-              <Icon name="md-create" style={styles.actionButtonIcon}></Icon>
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
-              <Icon name="md-trash" style={styles.actionButtonIcon}></Icon>
-            </ActionButton.Item>
-            <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
-              <Icon name="md-download" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-          </ActionButton>
+          </FlatList> */}
+          <PageListView
+            pageLen={15}
+            extraData={this.state}
+            renderRow={this._renderList}
+            refresh={this._refresh}
+            loadMore={this._loadMore}
+          ></PageListView>
         </View>
         <View style={styles.footer}>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 3 }]}>
@@ -238,6 +269,31 @@ export default class HomeScreen extends React.Component {
             <Text style={[styles.bItem, styles.textBlue]}>{this.state.moneyAll.toFixed(2) || 0}</Text>
           </View>
         </View>
+        {/* Rest of the app comes ABOVE the action button component !*/}
+        <ActionButton buttonColor="rgba(231,76,60,1)"
+          size={30} active={this.state.showAction}
+          resetToken={() => this.resetActionButton()}
+          position="right"
+          onReset={() => this.resetActionButton()}
+          offsetX={10} offsetY={26} spacing={6}
+        >
+          <ActionButton.Item buttonColor='#00BFFF' onPress={() => this.transNewSite(true)}>
+            <Icon name="md-add" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#9b59b6' onPress={() => this.transNewSite(false)}>
+            <Icon name="md-create" style={styles.actionButtonIcon}></Icon>
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3CB371'
+            onPress={() => this.transDetails(this.state.selectItem)}>
+            <Icon name="md-eye" style={styles.actionButtonIcon}></Icon>
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
+            <Icon name="md-trash" style={styles.actionButtonIcon}></Icon>
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
+            <Icon name="md-download" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     )
   }

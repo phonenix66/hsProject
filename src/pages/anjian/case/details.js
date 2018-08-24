@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, BackHandler, Dimensions, TouchableOpaci
 import moment from 'moment';
 const width = Dimensions.get('window').width;
 
-export default class DetailsScreen extends React.Component {
+export default class CaseDetailsPage extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
       title: navigation.state.params.data.name,
@@ -20,7 +20,7 @@ export default class DetailsScreen extends React.Component {
       headerLeft: (
         <TouchableOpacity onPress={() => { navigation.pop() }}>
           <View style={styles.backsty}>
-            <Image source={require('../../assets/img/back.png')} style={{ width: 20, height: 20 }} />
+            <Image source={require('../../../assets/img/back.png')} style={{ width: 20, height: 20 }} />
           </View>
         </TouchableOpacity>
       )
@@ -44,59 +44,59 @@ export default class DetailsScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>采砂项目名称</Text>
+            <Text style={[styles.text, styles.txtRight]}>填报单位</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.name}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>河流名称</Text>
+            <Text style={[styles.text, styles.txtRight]}>查获日期</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.riverName}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>许可证编号</Text>
+            <Text style={[styles.text, styles.txtRight]}>查获地点(水域)</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.passCard}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>许可采量（万吨/m³）</Text>
+            <Text style={[styles.text, styles.txtRight]}>船名/船号</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.lnumber}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>许可具体地点</Text>
+            <Text style={[styles.text, styles.txtRight]}>查获船舶(机具)类型</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.address}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>许可期限</Text>
+            <Text style={[styles.text, styles.txtRight]}>违法类别</Text>
             <Text style={[styles.text, styles.txtLeft]}>{moment(data.timeLimitStart).format('YYYY-MM-DD') + ' 至 ' + moment(data.timeLimitEnd).format('YYYY-MM-DD')}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>许可船舶</Text>
+            <Text style={[styles.text, styles.txtRight]}>业主姓名</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.typeShip}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>采砂功率（KW）</Text>
+            <Text style={[styles.text, styles.txtRight]}>身份证号</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.workPower}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>采砂业主</Text>
+            <Text style={[styles.text, styles.txtRight]}>采(运)砂总量(吨) </Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.owner}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>坐标</Text>
+            <Text style={[styles.text, styles.txtRight]}>没收违法所得数额(万元) </Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.coordinate}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>砂石资源矿业权出让收益征收（万元）</Text>
+            <Text style={[styles.text, styles.txtRight]}>是否拆除和没收采砂机具</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.money}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>现场监管单位（自动）</Text>
+            <Text style={[styles.text, styles.txtRight]}>罚款数额(万元)</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.supervision}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>采砂业主有无违规采砂行为</Text>
+            <Text style={[styles.text, styles.txtRight]}>是否没收采砂船舶</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.mistake ? '有' : '无'}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>现场监管责任人（人名及电话）</Text>
+            <Text style={[styles.text, styles.txtRight]}>结案日期</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.name}：{data.phone}</Text>
           </View>
         </ScrollView>
