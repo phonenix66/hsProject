@@ -12,15 +12,16 @@ import CaseListPage from '../pages/anjian/case/caseList';
 import SearchListPage from '../pages/anjian/search/list';
 import CaseDetailsPage from '../pages/anjian/case/details';
 const router = {
-  Main: {
-    screen: MainPage
-  },
   Home: {
     screen: HomeScreen
+  },
+  Main: {
+    screen: MainPage
   },
   Login: {
     screen: Login
   },
+
   NewSite: {
     screen: NewSite
   },
@@ -54,7 +55,7 @@ const router = {
   SearchList: {
     screen: SearchListPage
   },
-  initialRouteName: 'Main'
+  initialRouteName: 'Home'
 }
 
 export { router };

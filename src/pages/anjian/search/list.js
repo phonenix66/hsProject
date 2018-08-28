@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
-import Modal from 'react-native-modal';
+import {
+  View, Text, StyleSheet, Dimensions,
+  TouchableOpacity, Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import SearchModal from './searchBar';
+import { Loading } from '../../../base/Loading';
+
 const width = Dimensions.get('window').width;
 
 
@@ -38,7 +43,11 @@ export default class SearchListPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isModalVisible: false
+      isModalVisible: false,
+      searchName: '',
+      mode: 1,
+      smallApplyDate: '',
+      bigApplyDate: ''
     }
   }
   componentDidMount() {
@@ -76,34 +85,30 @@ export default class SearchListPage extends Component {
         <View style={styles.body}>
 
         </View>
-        <Modal isVisible={this.state.isModalVisible}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>输入查询条件</Text>
-            </View>
-            <View style={styles.modalBody}></View>
-            <View style={styles.modalFooter}>
-              <View style={styles.modalWrapper}>
-                <TouchableOpacity onPress={this._toggleModal}
-                  style={[styles.modalFooterButton, styles.modalRightLine]}>
-                  <View>
-                    <Text>取消</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={this._toggleModal} style={styles.modalFooterButton}>
-                  <View>
-                    <Text>查询</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <SearchModal {...this.state}
+          _toggleModal={this._toggleModal}
+          _smallApplyDate={this._smallApplyDate}
+          _bigApplyDate={this._bigApplyDate} />
       </View>
     )
   }
-  _toggleModal = () => {
+  _toggleModal = (opts) => {
+    if (opts.flag) {
+      console.log('发送查询参数');
+    }
     this.setState({ isModalVisible: !this.state.isModalVisible });
+    //Loading.show();
+    console.log(opts);
+  }
+  _smallApplyDate = (date) => {
+    this.setState({
+      smallApplyDate: date
+    })
+  }
+  _bigApplyDate = (date) => {
+    this.setState({
+      bigApplyDate: date
+    })
   }
 }
 const styles = StyleSheet.create({
@@ -172,42 +177,5 @@ const styles = StyleSheet.create({
     //height: 22,
     color: 'white'
   },
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  },
-  modalHeader: {
-    padding: 5,
-    borderBottomWidth: 0.5,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  },
-  modalTitle: {
-    fontSize: 14,
-  },
-  modalBody: {
-    padding: 10,
-  },
-  modalFooter: {
-    height: 30,
-    width: '100%'
-  },
-  modalWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  modalRightLine: {
-    borderRightWidth: 0.5,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  },
-  modalFooterButton: {
-    flex: 1,
-    borderTopWidth: 0.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: "rgba(0, 0, 0, 0.1)",
-    backgroundColor: '#ffffff',
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-  }
+
 })

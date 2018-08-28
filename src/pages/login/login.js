@@ -28,7 +28,7 @@ export default class Login extends Component {
       return;
     }
     Loading.show();
-    fetchRequest('rest/login', 'POST', {
+    fetchRequest('api/loginService', 'POST', {
       username: this.state.username,
       password: this.state.password
     }).then((res) => {

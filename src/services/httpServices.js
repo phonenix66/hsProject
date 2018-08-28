@@ -1,6 +1,6 @@
-const baseUrl = 'http://10.7.225.130:8000/';
+//const baseUrl = 'http://10.7.225.130:8000/';
 //const baseUrl = 'http://219.140.162.169:8850/sand/';
-//const baseUrl = 'http://10.6.181.55:8012/SPCRM/';
+const baseUrl = 'http://10.6.181.55:8012/SPCRM/';
 const token = '';
 
 /**
@@ -12,7 +12,7 @@ const token = '';
 
 function fetchRequest(serviceName, method, params = '') {
   let header = {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    'Content-Type': 'application/json;charset=UTF-8'
   }
   console.log('request url:', baseUrl + serviceName, params);  //打印请求参数
   if (params === '') {
@@ -30,16 +30,16 @@ function fetchRequest(serviceName, method, params = '') {
         })
     })
   } else {
-    const body = [];
+    /* const body = [];
     for (let key in params) {
       let item = (key + '=' + params[key]);
       body.push(item);
-    }
+    } */
     return new Promise((resolve, reject) => {
       fetch(baseUrl + serviceName, {
         method: method,
         headers: header,
-        body: body.join('&')
+        body: JSON.stringify(params)
       }).then(response => response.json())
         .then(responseData => {
           console.log('res:', serviceName, responseData);

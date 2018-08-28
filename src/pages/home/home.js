@@ -16,7 +16,6 @@ export default class HomeScreen extends React.Component {
         alignSelf: 'center',
         textAlign: 'center',
         width: '100%'
-
       },
       headerStyle: {
         backgroundColor: '#0079cc',
@@ -43,26 +42,11 @@ export default class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    /* fetchRequest('api/statisticsList', 'POST')
-      .then(res => {
-        this.setState({ data: res.body });
-        let total = 0, moneyAll = 0;
-        res.body.forEach(item => {
-          total += item.lnumber;
-          moneyAll += item.money;
-        })
-        this.setState({
-          total: total,
-          moneyAll: moneyAll
-        })
-        callBack(res.body);
-      }).catch(err => {
-        console.log(err);
-      }) */
+
   }
 
   showActionSelect = (item) => {
-    console.log(item);
+    //console.log(item);
     this.setState(prevState => {
       return {
         selectItem: item,
@@ -74,7 +58,7 @@ export default class HomeScreen extends React.Component {
     return item.index.toString()
   }
   transDetails = (item) => {
-    console.log(item);
+    //console.log(item);
     if (!item) return;
     this.props.navigation.navigate('Details', {
       data: item
@@ -171,11 +155,22 @@ export default class HomeScreen extends React.Component {
     )
   }
   _refresh = (callBack) => {
-    fetchRequest('api/statisticsList', 'POST', {
-      page: 1,
-      name: 'admin'
+    fetchRequest('rest/ShowPermissionListJson', 'POST', {
+      "page": "1",
+      "rows": "15",
+      "order": "",
+      "sort": "",
+      "area": "420180",
+      "proArea": "420000",
+      "cityArea": "420100",
+      "roleid": 2,
+      "id": "420100",
+      "nativePlaceProvinceId": "420000",
+      "nativePlaceCityId": "420100",
+      "nativePlaceCountyId": "420100"
     })
       .then(res => {
+        console.log(res);
         this.setState({ data: res.body });
         let total = 0, moneyAll = 0;
         res.body.forEach(item => {
