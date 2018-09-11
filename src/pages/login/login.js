@@ -4,7 +4,7 @@ import Orientation from 'react-native-orientation';
 import { Toast } from '../../base/Toast';
 import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
-
+import localStorage from '../../services/StorageTools';
 import Button from '../../base/Button';
 
 export default class Login extends Component {
@@ -20,6 +20,11 @@ export default class Login extends Component {
     }
   }
   componentDidMount() {
+    localStorage.load({
+      key: "userInfo"
+    }).then(res => {
+      console.log(res);
+    })
     Orientation.lockToLandscape();
   }
   login = () => {
@@ -28,21 +33,32 @@ export default class Login extends Component {
       return;
     }
     Loading.show();
-    fetchRequest('api/loginService', 'POST', {
+    fetchRequest('rest/login', 'POST', {
       username: this.state.username,
       password: this.state.password
     }).then((res) => {
       console.log(res);
       if (res.status === 0) {
         Loading.hidden();
+        localStorage.save({
+          key: "userInfo",
+          data: res
+        });
         this.setState({ showCancel: true });
       }
     }).catch(err => {
       console.log(err);
     })
+
   }
   toA = () => {
-    this.props.navigation.navigate('Home');
+    localStorage.load({
+      key: "userInfo"
+    })
+      .then(res => {
+        console.log(res);  //res = myData;
+        this.props.navigation.navigate('Home');
+      })
   }
   toB = () => {
     this.props.navigation.navigate('Main');

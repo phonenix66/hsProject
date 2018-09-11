@@ -15,13 +15,13 @@ const router = {
   Home: {
     screen: HomeScreen
   },
-  Main: {
-    screen: MainPage
-  },
   Login: {
     screen: Login
   },
 
+  Main: {
+    screen: MainPage
+  },
   NewSite: {
     screen: NewSite
   },

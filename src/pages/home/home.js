@@ -6,6 +6,8 @@ import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../base/Loading';
 import PageListView from 'react-native-page-listview';
+import localStorage from '../../services/StorageTools';
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -37,8 +39,17 @@ export default class HomeScreen extends React.Component {
       total: 0,
       moneyAll: 0,
       showAction: false,
-      selectItem: null
+      selectItem: null,
+      storage: null
     }
+  }
+
+  componentWillMount() {
+    localStorage.load({
+      key: "userInfo"
+    }).then(res => {
+      this.state.storage = res;
+    })
   }
 
   componentDidMount() {
@@ -130,10 +141,10 @@ export default class HomeScreen extends React.Component {
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.name || ''}</Text>
+            <Text style={styles.bItem}>{item.sandpro_name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.lnumber || ''}</Text>
+            <Text style={styles.bItem}>{item.liscense_production || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{moment(item.timeLimitStart).format('YYYY-MM-DD') || ''}</Text>
@@ -142,13 +153,13 @@ export default class HomeScreen extends React.Component {
             </Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.typeShip || ''}</Text>
+            <Text style={styles.bItem}>{item.ship_name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.owner || ''}</Text>
+            <Text style={styles.bItem}>{item.liscense_person || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.money || ''}</Text>
+            <Text style={styles.bItem}>{item.benifit || ''}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -156,32 +167,31 @@ export default class HomeScreen extends React.Component {
   }
   _refresh = (callBack) => {
     fetchRequest('rest/ShowPermissionListJson', 'POST', {
-      "page": "1",
-      "rows": "15",
-      "order": "",
-      "sort": "",
-      "area": "420180",
-      "proArea": "420000",
-      "cityArea": "420100",
-      "roleid": 2,
-      "id": "420100",
+      "employeeName": "武汉市管理员",
+      "organizationName": "",
+      "psdwId": "",
+      "departmentId": "",
+      "idpath": "",
+      "firstorgid": "",
+      "firstorgidpath": "",
       "nativePlaceProvinceId": "420000",
       "nativePlaceCityId": "420100",
-      "nativePlaceCountyId": "420100"
+      "nativePlaceCountyId": "420100",
+      "admindivname": "武汉市水务局",
+      "roleid": 4
     })
       .then(res => {
         console.log(res);
-        this.setState({ data: res.body });
-        let total = 0, moneyAll = 0;
-        res.body.forEach(item => {
-          total += item.lnumber;
-          moneyAll += item.money;
+        const data = res.row.map((item, i) => {
+          item.index = i + 1;
+          return item;
         })
+        this.setState({ data: data });
         this.setState({
-          total: total,
-          moneyAll: moneyAll
+          total: res.liscenseproductionsum,
+          moneyAll: res.benifitsum
         })
-        callBack(res.body);
+        callBack(data);
       }).catch(err => {
         console.log(err);
       })
@@ -192,17 +202,10 @@ export default class HomeScreen extends React.Component {
       name: 'admin'
     }).then(res => {
       if (res.status === 0) {
-        let total = 0, moneyAll = 0;
-        res.body.forEach(item => {
-          total += item.lnumber;
-          moneyAll += item.money;
-        })
-        callBack(res.body);
+        callBack(res.row);
         this.setState(prevState => {
           return {
-            data: prevState.data.concat(res.body),
-            total: prevState.total + total,
-            moneyAll: prevState.moneyAll + moneyAll
+            data: prevState.data.concat(res.row)
           }
         })
       }
