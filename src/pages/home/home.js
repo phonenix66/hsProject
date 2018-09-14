@@ -1,5 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, Image, Alert } from 'react-native';
+import {
+  View, Text, StyleSheet, TouchableOpacity,
+  Dimensions, FlatList, Image, Alert, AsyncStorage
+} from 'react-native';
 import { fetchRequest } from '../../services/httpServices';
 import moment from 'moment';
 import ActionButton from 'react-native-action-button';
@@ -40,16 +43,17 @@ export default class HomeScreen extends React.Component {
       moneyAll: 0,
       showAction: false,
       selectItem: null,
-      storage: null
+      storage: null,
+      refresh: false,
+      PL: null,
+      pageListView: [{
+        componentID: 'c_0'
+      }]
     }
   }
 
   componentWillMount() {
-    localStorage.load({
-      key: "userInfo"
-    }).then(res => {
-      this.state.storage = res;
-    })
+
   }
 
   componentDidMount() {
@@ -57,7 +61,7 @@ export default class HomeScreen extends React.Component {
   }
 
   showActionSelect = (item) => {
-    //console.log(item);
+    console.log(item);
     this.setState(prevState => {
       return {
         selectItem: item,
@@ -69,7 +73,6 @@ export default class HomeScreen extends React.Component {
     return item.index.toString()
   }
   transDetails = (item) => {
-    //console.log(item);
     if (!item) return;
     this.props.navigation.navigate('Details', {
       data: item
@@ -82,46 +85,55 @@ export default class HomeScreen extends React.Component {
     });
   }
   deleteItem = () => {
-    if (this.state.selectItem && this.state.showAction) {
-      const itemId = this.state.selectItem.id;
-      Alert.alert(
-        '提示',
-        '确定要删除此项许可',
-        [
-          {
-            text: '取消', onPress: () => { },
-            text: '确定', onPress: () => {
-              Loading.show();
-              fetchRequest('api/deleteItem', 'POST', { id: itemId })
-                .then(res => {
-                  Loading.hidden();
-                  console.log(res);
-                }).catch(err => {
-                  console.log(err);
+    const itemId = this.state.selectItem.permissionid;
+    AsyncStorage.getItem("userInfo", (error, result) => {
+      const opts = {
+        permissionid: Number(itemId)
+      }
+      Object.assign(opts, JSON.parse(result));
+      if (this.state.selectItem && this.state.showAction) {
+
+        Alert.alert(
+          '提示',
+          '确定要删除此项许可',
+          [
+            {
+              text: '取消', onPress: () => { },
+              text: '确定', onPress: () => {
+                this.setState({
+                  pageListView: []
                 })
+                Loading.show();
+                fetchRequest('rest/deletePermissionJson', 'POST', opts)
+                  .then(res => {
+                    Loading.hidden();
+                    console.log(res);
+                    this.setState({
+                      pageListView: [{
+                        componentID: "c_1"
+                      }]
+                    })
+                  }).catch(err => {
+                    console.log(err);
+                  })
+              }
             }
-          }
-        ]
-      )
-    }
+          ]
+        )
+      }
+
+    })
+
   }
   /*保存返回调用*/
   getSaveData(value) {
-    Loading.show();
-    fetchRequest('api/statisticsList', 'POST')
-      .then(res => {
-        Loading.hidden();
-        this.setState({ data: res.body });
-        let total = 0, moneyAll = 0;
-        res.body.forEach(item => {
-          total += item.lnumber;
-          moneyAll += item.money;
-        })
-        this.setState({
-          total: total,
-          moneyAll: moneyAll
-        })
-      })
+    this.setState({
+      pageListView: []
+    })
+    this.setState({
+      pageListView: [].concat([{ componentID: "c" + parseInt(Math.random() * 1000) }])
+    })
+    console.log("保存成功了.");
   }
   resetActionButton = () => {
     this.setState(prevState => {
@@ -136,7 +148,7 @@ export default class HomeScreen extends React.Component {
   _renderList = (item, index) => {
     return (
       <TouchableOpacity onPress={() => this.showActionSelect(item)}>
-        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.id === item.id) ? styles.selected : null]}>
+        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.permissionid === item.permissionid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>
@@ -144,19 +156,27 @@ export default class HomeScreen extends React.Component {
             <Text style={styles.bItem}>{item.sandpro_name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.liscense_production || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{moment(item.timeLimitStart).format('YYYY-MM-DD') || ''}</Text>
-            <Text style={styles.bItem}>
-              {'至' + moment(item.timeLimitEnd).format('YYYY-MM-DD') || ''}
+            <Text style={styles.bItem}>{item.liscense_production || ''}
+              {
+                (item.liscense_production_type === 1) ? '吨' : '立方米'
+              }
             </Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap, styles.textTime]}>
+            {
+              item.liscense_period.split(',').map((item, index) => {
+                return (<View key={index + 1}>
+                  <Text style={styles.bItem} key={index}>{item}</Text>
+                </View>)
+              })
+            }
+
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.ship_name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.liscense_person || ''}</Text>
+            <Text style={styles.bItem}>{item.liscense_person || ''}{this.state.refresh}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.benifit || ''}</Text>
@@ -166,35 +186,44 @@ export default class HomeScreen extends React.Component {
     )
   }
   _refresh = (callBack) => {
-    fetchRequest('rest/ShowPermissionListJson', 'POST', {
-      "employeeName": "武汉市管理员",
-      "organizationName": "",
-      "psdwId": "",
-      "departmentId": "",
-      "idpath": "",
-      "firstorgid": "",
-      "firstorgidpath": "",
-      "nativePlaceProvinceId": "420000",
-      "nativePlaceCityId": "420100",
-      "nativePlaceCountyId": "420100",
-      "admindivname": "武汉市水务局",
-      "roleid": 4
-    })
-      .then(res => {
-        console.log(res);
-        const data = res.row.map((item, i) => {
-          item.index = i + 1;
-          return item;
-        })
-        this.setState({ data: data });
-        this.setState({
-          total: res.liscenseproductionsum,
-          moneyAll: res.benifitsum
-        })
-        callBack(data);
-      }).catch(err => {
-        console.log(err);
+    AsyncStorage.getItem('userInfo', (error, result) => {
+      if (error) {
+        console.log("home error ===>", error);
+      };
+      this.setState({
+        storage: JSON.parse(result)
+      });
+      console.log("home===>", JSON.parse(result));
+      fetchRequest('rest/ShowPermissionListJson', 'POST', {
+        "employeeName": this.state.storage.employeeName,
+        "organizationName": "",
+        "psdwId": "",
+        "departmentId": "",
+        "idpath": "",
+        "firstorgid": "",
+        "firstorgidpath": "",
+        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
+        "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
+        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
+        "admindivname": this.state.storage.admindivname,
+        "roleid": this.state.storage.roleid
       })
+        .then(res => {
+          console.log(res);
+          const data = res.row.map((item, i) => {
+            item.index = i + 1;
+            return item;
+          })
+          this.setState({ data: data });
+          this.setState({
+            total: res.liscenseproductionsum,
+            moneyAll: res.benifitsum
+          })
+          callBack(data);
+        }).catch(err => {
+          console.log(err);
+        })
+    })
   }
   _loadMore = (page = 2, callBack) => {
     fetchRequest('api/statisticsList', 'POST', {
@@ -209,12 +238,15 @@ export default class HomeScreen extends React.Component {
           }
         })
       }
-
     })
+  }
+  _getRefs = (r) => {
+    console.log(r);
+    this.setState({ PL: r })
   }
   render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.container} >
         <View style={styles.top}>
           <View style={[styles.textWrap, styles.textIndex]}>
             <Text style={styles.topItem}>序号</Text>
@@ -225,7 +257,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.textWrap}>
             <Text style={styles.topItem}>许可采量（万吨/m³）</Text>
           </View>
-          <View style={styles.textWrap}>
+          <View style={[styles.textWrap, styles.textTime]}>
             <Text style={styles.topItem}>许可期限</Text>
           </View>
           <View style={styles.textWrap}>
@@ -245,13 +277,20 @@ export default class HomeScreen extends React.Component {
             renderItem={this._renderList}
             keyExtractor={this._setIndex} removeClippedSubviews disableVirtualization>
           </FlatList> */}
-          <PageListView
-            pageLen={15}
-            extraData={this.state}
-            renderRow={this._renderList}
-            refresh={this._refresh}
-            loadMore={this._loadMore}
-          ></PageListView>
+          {
+            this.state.pageListView.map((item, index) => {
+              return <PageListView
+                componentID={item.componentID}
+                key={index}
+                pageLen={1500}
+                extraData={this.state}
+                renderRow={this._renderList}
+                refresh={this._refresh}
+                loadMore={this._loadMore}
+              />
+            })
+          }
+
         </View>
         <View style={styles.footer}>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 3 }]}>
@@ -288,11 +327,11 @@ export default class HomeScreen extends React.Component {
           <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
             <Icon name="md-trash" style={styles.actionButtonIcon}></Icon>
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
+          {/* <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
             <Icon name="md-download" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
+          </ActionButton.Item> */}
         </ActionButton>
-      </View>
+      </View >
     )
   }
 }
@@ -330,6 +369,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRightWidth: 1,
     borderColor: '#bfd6ff',
+  },
+  textTime: {
+    flex: 3
   },
   topItem: {
     fontSize: 10,

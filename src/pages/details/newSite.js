@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
   View, ScrollView, Text, Image, StyleSheet,
-  Dimensions, BackHandler, TouchableOpacity, Switch
+  Dimensions, BackHandler, TouchableOpacity, Switch, Picker, AsyncStorage
 } from 'react-native';
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -10,8 +10,11 @@ import CheckBox from 'react-native-checkbox-heaven';
 import Button from '../../base/Button';
 import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
-import DatePicker from 'react-native-datepicker';
-import moment from 'moment';
+//import DatePicker from 'react-native-datepicker';
+//import moment from 'moment';
+import LimitDateComponent from './LimitDate';
+import { Item } from 'native-base';
+
 const width = Dimensions.get('window').width;
 export default class NewSite extends Component {
 
@@ -40,26 +43,53 @@ export default class NewSite extends Component {
   constructor(props) {
     super(props);
     this.navParams = this.props.navigation.state.params.data;
-    //console.log(this.navParams);
-    this.state = {
-      name: this.navParams ? this.navParams.name : '',
-      riverName: this.navParams ? this.navParams.riverName : '',
-      passCard: this.navParams ? this.navParams.passCard : '',
-      lnumber: this.navParams ? this.navParams.lnumber.toString() : '',
-      address: this.navParams ? this.navParams.address : '',
-      timeLimitStart: this.navParams ? (this.navParams.timeLimitStart) : '',
-      timeLimitEnd: this.navParams ? (this.navParams.timeLimitEnd) : '',
-      typeShip: this.navParams ? this.navParams.typeShip : '',
-      workPower: this.navParams ? this.navParams.workPower.toString() : '',
-      owner: this.navParams ? this.navParams.owner : '',
-      coordinate: this.navParams ? this.navParams.coordinate : '',
-      money: this.navParams ? this.navParams.money.toString() : '',
-      supervision: this.navParams ? this.navParams.supervision : '',//监管
-      mistake: this.navParams ? this.navParams.mistake : false,
-      dutyPersonName: this.navParams ? this.navParams.dutyPersonName : '',
-      phone: this.navParams ? this.navParams.phone : ''
-    }
+    console.log(this.navParams);
 
+    this.state = {
+      sandpro_name: this.navParams ? this.navParams.sandpro_name : '',
+      river_name: this.navParams ? this.navParams.river_name : '',
+      permissionCard_no: this.navParams ? this.navParams.permissionCard_no + '' : '',
+      liscense_production: this.navParams ? (this.navParams.liscense_production + '') : '',
+      liscense_production_type: this.navParams ? (this.navParams.liscense_production_type + '') : '1',
+      perm_place: this.navParams ? this.navParams.perm_place : '',
+      ship_name: this.navParams ? this.navParams.ship_name : '',
+      sand_extraction_power: this.navParams ? (this.navParams.sand_extraction_power + '') : '',
+      liscense_person: this.navParams ? this.navParams.liscense_person : '',
+      coordinates: this.navParams ? this.navParams.coordinates : '',
+      benifit: this.navParams ? this.navParams.benifit + '' : '',
+      mistake: this.navParams ? this.navParams.mistake : false,
+      department: this.navParams ? this.navParams.department : '',
+      person: this.navParams ? this.navParams.person : '',
+      phone: this.navParams ? this.navParams.phone : '',
+      longitude: '',//经度
+      latitude: '',//纬度
+      liscense_period: '',
+      dateComponentArray: [],
+      permissionid: this.navParams ? (this.navParams.permissionid + '') : "0" //新增更新id
+    }
+    if (this.navParams.liscense_period) {
+      const liscense_period = this.navParams.liscense_period.split(',');
+      this.state.dateComponentArray = liscense_period.map((item, index) => {
+        return {
+          id: 'component' + index,
+          num: index,
+          timeStart: item.split('~')[0],
+          timeEnd: item.split('~')[1]
+        }
+      })
+    } else {
+      this.state.dateComponentArray = [{
+        id: "component0",
+        num: 0,
+        timeStart: '',
+        timeEnd: ''
+      }]
+    }
+    if (this.state.coordinates) {
+      const coordinates = this.state.coordinates.split(',');
+      this.state.longitude = coordinates[0];
+      this.state.latitude = coordinates[1];
+    }
     //console.log(this.props.navigation.state.params.data);
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.navigation.pop();
@@ -72,6 +102,56 @@ export default class NewSite extends Component {
         mistake: !prevState.mistake
       }
     })
+  }
+  addSubComponent = () => {
+    const dateComponent = this.state.dateComponentArray;
+    if (dateComponent.length === 2) {
+      alert('最多添加2个许可期限');
+      return;
+    }
+    const newDateComponent = dateComponent.concat({
+      id: "component" + (dateComponent.length),
+      num: dateComponent.length,
+      timeStart: '',
+      timeEnd: ''
+    })
+    this.setState({
+      dateComponentArray: newDateComponent
+    })
+    console.log("父组件回调+++++");
+  }
+  deleteSubComponent = (componentID) => {
+    const dateComponent = this.state.dateComponentArray;
+    const newDateComponent = dateComponent.filter(item => {
+      return item.id !== componentID;
+    })
+    this.setState({
+      dateComponentArray: newDateComponent
+    })
+    console.log("父组件-----", componentID);
+  }
+  timeStartChange = (date, componentID) => {
+    const dateComponent = this.state.dateComponentArray;
+    dateComponent.forEach(item => {
+      if (item.id === componentID) {
+        item.timeStart = date;
+      }
+    })
+    this.setState({
+      dateComponentArray: dateComponent
+    })
+  }
+  timeEndChange = (date, componentID) => {
+    const dateComponent = this.state.dateComponentArray;
+    dateComponent.forEach(item => {
+      if (item.id === componentID) {
+        item.timeEnd = date;
+      }
+    })
+    this.setState({
+      dateComponentArray: dateComponent
+    })
+    console.log(this.state.dateComponentArray);
   }
   render() {
     return (
@@ -87,8 +167,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.name}
-                onChangeText={(text) => { this.setState({ name: text }) }}
+                value={this.state.sandpro_name}
+                onChangeText={(text) => { this.setState({ sandpro_name: text }) }}
               />
               <Fumi
                 style={styles.input}
@@ -99,8 +179,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.riverName}
-                onChangeText={(text) => { this.setState({ riverName: text }) }}
+                value={this.state.river_name}
+                onChangeText={(text) => { this.setState({ river_name: text }) }}
               />
               <Fumi
                 label={'许可证编号'}
@@ -110,20 +190,34 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.passCard}
-                onChangeText={(text) => { this.setState({ passCard: text }) }}
+                value={this.state.permissionCard_no}
+                onChangeText={(text) => { this.setState({ permissionCard_no: text }) }}
               />
               <Fumi
-                label={'许可采量（万吨/m³）'}
+                label={'许可采量'}
                 labelStyle={{ color: '#a3a3a3' }}
                 inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
                 iconClass={FontAwesomeIcon}
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.lnumber}
-                onChangeText={(text) => { this.setState({ lnumber: text }) }}
+                value={this.state.liscense_production}
+                onChangeText={(text) => { this.setState({ liscense_production: text }) }}
               />
+              <View style={styles.pickerWrap}>
+                <View style={styles.pickerTxt}>
+                  <Text>采砂量单位</Text>
+                </View>
+                <View style={styles.pickerSelect}>
+                  <Picker
+                    selectedValue={this.state.liscense_production_type}
+                    style={{ height: 40, width: '100%' }}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ liscense_production_type: itemValue })}>
+                    <Picker.Item label="吨" value="1" />
+                    <Picker.Item label="立方米" value="0" />
+                  </Picker>
+                </View>
+              </View>
               <Fumi
                 label={'许可具体地点'}
                 labelStyle={{ color: '#a3a3a3' }}
@@ -132,52 +226,24 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.address}
-                onChangeText={(text) => { this.setState({ address: text }) }}
+                value={this.state.perm_place}
+                onChangeText={(text) => { this.setState({ perm_place: text }) }}
               />
               <View>
                 <Text style={styles.limitTitle}>许可期限</Text>
-                <View style={styles.limitSelect}>
-                  <DatePicker
-                    style={{ width: 180, marginTop: 6, marginRight: 10, }}
-                    date={this.state.timeLimitStart ? moment(this.state.timeLimitStart) : ''}
-                    mode="date"
-                    androidMode="spinner"
-                    placeholder="许可期限开始"
-                    format="YYYY-MM-DD"
-                    confirmBtnText="确定"
-                    cancelBtnText="取消"
-                    customStyles={{
-                      dateInput: {
-                        marginLeft: 0,
-                        borderWidth: 0,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#a3a3a3'
-                      }
-                    }}
-                    onDateChange={(date) => { this.setState({ timeLimitStart: date }) }}
-                  />
-                  <DatePicker
-                    style={{ width: 180, marginTop: 6, marginRight: 10, }}
-                    date={this.state.timeLimitEnd ? moment(this.state.timeLimitEnd) : ''}
-                    mode="date"
-                    androidMode="spinner"
-                    placeholder="许可期限结束"
-                    format="YYYY-MM-DD"
-                    confirmBtnText="确定"
-                    cancelBtnText="取消"
-                    customStyles={{
-                      dateInput: {
-                        marginLeft: 0,
-                        borderWidth: 0,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#a3a3a3'
-                      }
-                    }}
-                    onDateChange={(date) => { this.setState({ timeLimitEnd: date }) }}
-                  />
-                </View>
-
+                {
+                  this.state.dateComponentArray.map((item, index) => {
+                    return <LimitDateComponent key={index}
+                      componentID={item.id}
+                      num={item.num}
+                      timeStart={item.timeStart}
+                      timeEnd={item.timeEnd}
+                      timeStartChange={this.timeStartChange}
+                      timeEndChange={this.timeEndChange}
+                      addComponent={this.addSubComponent}
+                      deleteComponent={this.deleteSubComponent} />
+                  })
+                }
               </View>
 
               <Fumi
@@ -188,8 +254,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.typeShip}
-                onChangeText={(text) => { this.setState({ typeShip: text }) }}
+                value={this.state.ship_name}
+                onChangeText={(text) => { this.setState({ ship_name: text }) }}
               />
               <Fumi
                 label={'采砂功率（KW）'}
@@ -199,8 +265,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.workPower}
-                onChangeText={(text) => { this.setState({ workPower: text }) }}
+                value={this.state.sand_extraction_power}
+                onChangeText={(text) => { this.setState({ sand_extraction_power: text }) }}
               />
               <Fumi
                 label={'采砂业主'}
@@ -210,20 +276,37 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.owner}
-                onChangeText={(text) => { this.setState({ owner: text }) }}
+                value={this.state.liscense_person}
+                onChangeText={(text) => { this.setState({ liscense_person: text }) }}
               />
-              <Fumi
-                label={'坐标'}
-                labelStyle={{ color: '#a3a3a3' }}
-                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
-                iconClass={FontAwesomeIcon}
-                iconName={'university'}
-                iconColor={'#0079cc'}
-                iconSize={15}
-                value={this.state.coordinate}
-                onChangeText={(text) => { this.setState({ coordinate: text }) }}
-              />
+              <View style={styles.coordinate}>
+                <View style={styles.itemCoor}>
+                  <Fumi
+                    label={'经度'}
+                    labelStyle={{ color: '#a3a3a3' }}
+                    inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                    iconClass={FontAwesomeIcon}
+                    iconName={'university'}
+                    iconColor={'#0079cc'}
+                    iconSize={15}
+                    value={this.state.longitude}
+                    onChangeText={(text) => { this.setState({ longitude: text }) }}
+                  />
+                </View>
+                <View style={styles.itemCoor}>
+                  <Fumi
+                    label={'纬度'}
+                    labelStyle={{ color: '#a3a3a3' }}
+                    inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                    iconClass={FontAwesomeIcon}
+                    iconName={'university'}
+                    iconColor={'#0079cc'}
+                    iconSize={15}
+                    value={this.state.latitude}
+                    onChangeText={(text) => { this.setState({ latitude: text }) }}
+                  />
+                </View>
+              </View>
               <Fumi
                 label={'砂石资源矿业权出让收益征收（万元）'}
                 labelStyle={{ color: '#a3a3a3' }}
@@ -232,8 +315,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.money}
-                onChangeText={(text) => { this.setState({ money: text }) }}
+                value={this.state.benifit}
+                onChangeText={(text) => { this.setState({ benifit: text }) }}
               />
               <Fumi
                 label={'现场监管单位'}
@@ -243,10 +326,10 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.supervision}
-                onChangeText={(text) => { this.setState({ supervision: text }) }}
+                value={this.state.department}
+                onChangeText={(text) => { this.setState({ department: text }) }}
               />
-              <View style={styles.switchWrap}>
+              {/* <View style={styles.switchWrap}>
                 <Text style={styles.labelTxt}>采砂业主有无违规采砂行为</Text>
                 <Switch
                   onValueChange={this._toggleSwitch}
@@ -255,7 +338,7 @@ export default class NewSite extends Component {
                 <Text style={styles.labelTxt}>
                   {this.state.mistake === false ? '无' : '有'}
                 </Text>
-              </View>
+              </View> */}
               <Fumi
                 label={'现场监管责任人'}
                 labelStyle={{ color: '#a3a3a3' }}
@@ -264,8 +347,8 @@ export default class NewSite extends Component {
                 iconName={'university'}
                 iconColor={'#0079cc'}
                 iconSize={15}
-                value={this.state.dutyPersonName}
-                onChangeText={(text) => { this.setState({ dutyPersonName: text }) }}
+                value={this.state.person}
+                onChangeText={(text) => { this.setState({ person: text }) }}
               />
               <Fumi
                 label={'现场监管责任人电话'}
@@ -289,15 +372,44 @@ export default class NewSite extends Component {
   }
   saveHandle = () => {
     Loading.show();
-    fetchRequest('api/saveData', 'POST', { ...this.state }).then((res) => {
-      if (res.status === 0) {
-        Loading.hidden();
-        this.props.navigation.state.params.getSaveData({ ...this.state });
-        this.props.navigation.goBack();
-      }
-    }).catch(err => {
-      console.log(err);
+    const { sandpro_name, river_name, permissionCard_no, liscense_production, liscense_production_type, perm_place, ship_name, sand_extraction_power, liscense_person, benifit, department, person, phone, dateComponentArray, coordinates, longitude, latitude, permissionid } = this.state;
+    const saveData = {
+      sandpro_name,
+      river_name,
+      permissionCard_no,
+      liscense_production: liscense_production,
+      liscense_production_type: Number(liscense_production_type),
+      perm_place,
+      ship_name,
+      sand_extraction_power: Number(sand_extraction_power),
+      liscense_person,
+      benifit,
+      department,
+      person,
+      phone,
+      coordinates,
+      permissionid
+    }
+    const dateList = dateComponentArray.map(item => {
+      return item.timeStart + '~' + item.timeEnd
     })
+    saveData.liscense_period = dateList.join(',');
+    saveData.coordinates = [longitude, latitude].join(',');
+    //console.log(saveData);
+    AsyncStorage.getItem('userInfo', (error, result) => {
+      Object.assign(saveData, JSON.parse(result));
+      fetchRequest('rest/SavePermissionJson', 'POST', saveData).then((res) => {
+        if (res.status === 0) {
+          Loading.hidden();
+          this.props.navigation.state.params.getSaveData(saveData);
+          this.props.navigation.goBack();
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+
+    })
+
   }
   transData = (data) => {
     this.setState({
@@ -339,9 +451,21 @@ const styles = StyleSheet.create({
   limitTitle: {
     marginTop: 6
   },
-  limitSelect: {
+  pickerWrap: {
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  pickerTxt: {
+    flex: 1
+  },
+  pickerSelect: {
+    flex: 3,
+    borderColor: '#eaeaea',
+    borderWidth: 1,
+    borderRadius: 6
   },
   switchWrap: {
     flex: 1,
@@ -352,5 +476,12 @@ const styles = StyleSheet.create({
   labelTxt: {
     marginTop: 5,
     marginRight: 12
+  },
+  coordinate: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  itemCoor: {
+    flex: 1,
   }
 }) 

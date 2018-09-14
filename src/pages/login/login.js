@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, PixelRatio, ImageBackground } from 'react-native';
+import {
+  StyleSheet, View, Text, TouchableOpacity,
+  TextInput, PixelRatio, ImageBackground, AsyncStorage
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import { Toast } from '../../base/Toast';
 import { Loading } from '../../base/Loading';
@@ -16,15 +19,22 @@ export default class Login extends Component {
     this.state = {
       username: '',
       password: '',
-      showCancel: false
+      showCancel: false,
+      storage: null
     }
   }
   componentDidMount() {
-    localStorage.load({
+    /* localStorage.load({
       key: "userInfo"
     }).then(res => {
       console.log(res);
-    })
+    }) */
+    /* AsyncStorage.getItem('userInfo', (error, result) => {
+      if (error) return;
+      this.setState({
+        storage: result
+      })
+    }) */
     Orientation.lockToLandscape();
   }
   login = () => {
@@ -37,28 +47,34 @@ export default class Login extends Component {
       username: this.state.username,
       password: this.state.password
     }).then((res) => {
-      console.log(res);
+      //console.log(res);
       if (res.status === 0) {
         Loading.hidden();
-        localStorage.save({
-          key: "userInfo",
-          data: res
-        });
+        this._storeData(res);
         this.setState({ showCancel: true });
       }
     }).catch(err => {
       console.log(err);
     })
+  }
+  _storeData = async (res) => {
+    const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = res;
+    try {
+      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid }))
+    } catch (error) {
+      console.log(error);
+    }
 
   }
-  toA = () => {
-    localStorage.load({
-      key: "userInfo"
-    })
-      .then(res => {
-        console.log(res);  //res = myData;
-        this.props.navigation.navigate('Home');
-      })
+  toA = async () => {
+    this.props.navigation.navigate('Home');
+    try {
+      const value = await AsyncStorage.getItem('userInfo');
+      console.log(value);
+    } catch (error) {
+      console.log(error);
+    }
+
   }
   toB = () => {
     this.props.navigation.navigate('Main');

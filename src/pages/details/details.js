@@ -45,51 +45,52 @@ export default class DetailsScreen extends React.Component {
         <ScrollView>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂项目名称</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.name}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.sandpro_name}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>河流名称</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.riverName}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.river_name}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可证编号</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.passCard}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.permissionCard_no}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可采量（万吨/m³）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.lnumber}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.liscense_production}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可具体地点</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.address}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.perm_place}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可期限</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{moment(data.timeLimitStart).format('YYYY-MM-DD') + ' 至 ' + moment(data.timeLimitEnd).format('YYYY-MM-DD')}</Text>
+            {/* <Text style={[styles.text, styles.txtLeft]}>{moment(data.timeLimitStart).format('YYYY-MM-DD') + ' 至 ' + moment(data.timeLimitEnd).format('YYYY-MM-DD')}</Text> */}
+            <Text style={[styles.text, styles.txtLeft]}>{data.liscense_period}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可船舶</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.typeShip}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.ship_name}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂功率（KW）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.workPower}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.sand_extraction_power}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂业主</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.owner}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.liscense_person}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>坐标</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.coordinate}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.coordinates}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>砂石资源矿业权出让收益征收（万元）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.money}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.benifit}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>现场监管单位（自动）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.supervision}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.department}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂业主有无违规采砂行为</Text>
@@ -97,7 +98,7 @@ export default class DetailsScreen extends React.Component {
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>现场监管责任人（人名及电话）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.persionName}：{data.phone}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.person}：{data.phone}</Text>
           </View>
         </ScrollView>
       </View>
