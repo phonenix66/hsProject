@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ScrollView, TextInput, Picker } from 'react-native';
+import {
+  View, Text, StyleSheet, TouchableOpacity,
+  Image, Dimensions, ScrollView, TextInput, Picker, AsyncStorage
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import DatePicker from 'react-native-datepicker';
 import Button from '../../../base/Button';
 import { fetchRequest } from '../../../services/httpServices';
-
+import { Loading } from '../../../base/Loading';
+import moment from 'moment';
 const width = Dimensions.get('window').width;
 
 export default class NewCasePage extends Component {
@@ -32,17 +36,25 @@ export default class NewCasePage extends Component {
   }
   constructor(props) {
     super(props);
+
+    this.navParams = this.props.navigation.state.params.data;
+    console.log("case edit", this.navParams);
+
     this.state = {
-      seizedDate: '',
-      closeDate: '',
-      name: '',
-      type: 0,
-      confiscationEquipment: 1,
-      confiscationShip: 1,
-      weight: '',
-      seizedPlace: '',
-      shipNo: '',
-      status: 0
+      caseid: this.navParams ? this.navParams.caseid + '' : '0',
+      seized_date: this.navParams ? moment(this.navParams.seized_date).format('YYYY-MM-DD') : '', //查获日期
+      close_date: this.navParams ? moment(this.navParams.close_date).format('YYYY-MM-DD') : '', //结案日期
+      code: this.navParams ? this.navParams.code : '',//身份证 
+      name: this.navParams ? this.navParams.name : '', //业主
+      type: this.navParams ? this.navParams.type + '' : 0, //船舶类型
+      confiscation_equipment: this.navParams ? this.navParams.confiscation_equipment + '' : '0',  //1是0否
+      fine_amount: this.navParams ? this.navParams.fine_amount + '' : '',//罚款数额
+      confiscation_ship: this.navParams ? this.navParams.confiscation_ship + '' : '0', //是否没收采砂船舶 1是0否
+      weight: this.navParams ? this.navParams.weight + '' : '', //采砂总量
+      seized_place: this.navParams ? this.navParams.seized_place : '',//查获地点(水域)
+      ship_no: this.navParams ? this.navParams.ship_no : '', //船名船号
+      status: this.navParams ? this.navParams.status + '' : '0',  //违法类型
+      seizure_amount: this.navParams ? this.navParams.seizure_amount + '' : '' //没收违法所得数额
     }
   }
   componentDidMount() {
@@ -61,7 +73,7 @@ export default class NewCasePage extends Component {
                 <View style={styles.wrInput}>
                   <DatePicker
                     style={{ width: '100%', marginTop: 6, marginRight: 0, }}
-                    date={this.state.seizedDate}
+                    date={this.state.seized_date}
                     mode="date"
                     androidMode="spinner"
                     placeholder=" "
@@ -77,7 +89,7 @@ export default class NewCasePage extends Component {
                         alignItems: 'flex-start'
                       }
                     }}
-                    onDateChange={(date) => { this.setState({ seizedDate: date }) }}
+                    onDateChange={(date) => { this.setState({ seized_date: date }) }}
                   />
                 </View>
               </View>
@@ -88,7 +100,7 @@ export default class NewCasePage extends Component {
                 <View style={styles.wrInput}>
                   <DatePicker
                     style={{ width: '100%', marginTop: 6, marginRight: 0, }}
-                    date={this.state.closeDate}
+                    date={this.state.close_date}
                     mode="date"
                     androidMode="spinner"
                     format="YYYY-MM-DD"
@@ -104,7 +116,7 @@ export default class NewCasePage extends Component {
                         alignItems: 'flex-start'
                       }
                     }}
-                    onDateChange={(date) => { this.setState({ closeDate: date }) }}
+                    onDateChange={(date) => { this.setState({ close_date: date }) }}
                   />
                 </View>
               </View>
@@ -115,6 +127,7 @@ export default class NewCasePage extends Component {
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
                     underlineColorAndroid='transparent'
+                    value={this.state.name}
                     onChangeText={(text) => this.setState({ name: text })} />
                 </View>
               </View>
@@ -145,9 +158,9 @@ export default class NewCasePage extends Component {
                   <Text>是否拆除和没收采砂机具</Text>
                 </View>
                 <View style={styles.wrInput}>
-                  <Picker selectedValue={this.state.confiscationEquipment}
+                  <Picker selectedValue={this.state.confiscation_equipment}
                     style={{ height: 50, width: '100%' }}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ confiscationEquipment: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this.setState({ confiscation_equipment: itemValue + '' })}>
                     <Picker.Item label="是" value="1" />
                     <Picker.Item label="否" value="0" />
                   </Picker>
@@ -159,8 +172,9 @@ export default class NewCasePage extends Component {
                 </View>
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
-                    onChangeText={(text) => this.setState({ fineAmount: text })}
+                    onChangeText={(text) => this.setState({ fine_amount: text })}
                     underlineColorAndroid='transparent'
+                    value={this.state.fine_amount}
                     keyboardType="numeric" />
                 </View>
               </View>
@@ -171,6 +185,7 @@ export default class NewCasePage extends Component {
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
                     onChangeText={(text) => this.setState({ weight: text })}
+                    value={this.state.weight}
                     underlineColorAndroid='transparent'
                     keyboardType="numeric" />
                 </View>
@@ -183,7 +198,8 @@ export default class NewCasePage extends Component {
                 </View>
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
-                    onChangeText={(text) => this.setState({ seizedPlace: text })}
+                    value={this.state.seized_place}
+                    onChangeText={(text) => this.setState({ seized_place: text })}
                     underlineColorAndroid='transparent' />
                 </View>
               </View>
@@ -193,7 +209,8 @@ export default class NewCasePage extends Component {
                 </View>
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
-                    onChangeText={(text) => this.setState({ shipNo: text })}
+                    onChangeText={(text) => this.setState({ ship_no: text })}
+                    value={this.state.ship_no}
                     underlineColorAndroid='transparent' />
                 </View>
               </View>
@@ -203,6 +220,7 @@ export default class NewCasePage extends Component {
                 </View>
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
+                    value={this.state.code}
                     onChangeText={(text) => this.setState({ code: text })}
                     underlineColorAndroid='transparent' />
                 </View>
@@ -227,9 +245,9 @@ export default class NewCasePage extends Component {
                   <Text>是否没收采砂船舶</Text>
                 </View>
                 <View style={styles.wrInput}>
-                  <Picker selectedValue={this.state.confiscationShip}
+                  <Picker selectedValue={this.state.confiscation_ship}
                     style={{ height: 50, width: '100%' }}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ confiscationShip: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this.setState({ confiscation_ship: '' + itemValue })}>
                     <Picker.Item label="是" value="1" />
                     <Picker.Item label="否" value="0" />
                   </Picker>
@@ -241,13 +259,13 @@ export default class NewCasePage extends Component {
                 </View>
                 <View style={styles.wrInput}>
                   <TextInput style={styles.input}
-                    onChangeText={(text) => this.setState({ seizureAmount: text })}
+                    value={this.state.seizure_amount}
+                    onChangeText={(text) => this.setState({ seizure_amount: text })}
                     keyboardType="numeric"
                     underlineColorAndroid='transparent' />
                 </View>
               </View>
             </View>
-
           </View>
           <View style={styles.subBtn}>
             <Button text="提交" onPress={this._saveData}></Button>
@@ -257,13 +275,57 @@ export default class NewCasePage extends Component {
     )
   }
   _saveData = () => {
-    console.log({ ...this.state });
-    fetchRequest('api/saveData', 'POST', { ...this.state })
-      .then((res) => {
-        console.log(res);
+    Loading.show();
+    const {
+      seized_date,
+      close_date,
+      code,
+      name,
+      type,
+      confiscation_equipment,
+      fine_amount,
+      confiscation_ship,
+      weight,
+      seized_place,
+      ship_no,
+      status,
+      seizure_amount
+    } = this.state;
+    const saveData = {
+      seized_date,
+      close_date,
+      code,
+      name,
+      type: Number(type),
+      typename: "小型吸砂船",
+      confiscation_equipment: confiscation_equipment + '',
+      confiscationShipName: (confiscation_equipment == 1) ? '是' : '否',
+      fine_amount,
+      confiscation_ship: confiscation_ship + '',
+      confiscationname: (confiscation_ship == 1) ? '是' : '否',
+      weight: Number(weight),
+      seized_place,
+      ship_no,
+      status: Number(status),
+      statusname: "违法采砂",
+      seizure_amount,
+      caseid: '0'
+    }
+    console.log(saveData);
+    AsyncStorage.getItem('userInfo', (error, result) => {
+      Object.assign(saveData, JSON.parse(result));
+      fetchRequest('rest/SaveCasenJson', 'POST', saveData).then((res) => {
+        if (res.status === 0) {
+          Loading.hidden();
+          this.props.navigation.state.params.getSaveData(saveData);
+          this.props.navigation.goBack();
+        }
+      }).catch(err => {
+        console.log(err);
       })
-
+    })
   }
+
 }
 
 const styles = StyleSheet.create({

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
   View, Text, TouchableOpacity, StyleSheet, Image, Dimensions,
-  FlatList, Alert
+  FlatList, Alert, AsyncStorage
 } from 'react-native';
 import { fetchRequest } from '../../../services/httpServices';
 import ActionButton from 'react-native-action-button';
@@ -38,30 +38,35 @@ export default class CaseListPage extends Component {
     this.state = {
       data: [],
       selectItem: null,
-      showAction: false
+      showAction: false,
+      storage: '',
+      pageListView: [{
+        componentID: "c_0"
+      }]
     }
   }
   componentDidMount() {
-    const serviceName = 'api/statisticsList';
+    /* const serviceName = 'rest/ShowCasenListJson';
     fetchRequest(serviceName, 'POST', { ...this.state })
       .then(res => {
         this.setState({
-          data: res.body
+          data: res.row
         })
-      })
+      }) */
   }
   pageToEdit = (flag) => {
-    if (flag) {
-      this.props.navigation.navigate('NewCase')
-    } else {
-      if (!this.state.selectItem) {
-        this.alertTips();
-        return;
-      }
-      this.props.navigation.navigate('NewCase', {
-        data: this.state.selectItem
-      })
+    /* if (flag) {
+      this.props.navigation.navigate('NewCase',)
+    } else { */
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
     }
+    this.props.navigation.navigate('NewCase', {
+      getSaveData: this.getSaveData.bind(this),
+      data: !flag ? this.state.selectItem : null
+    })
+    //}
   }
   alertTips() {
     Alert.alert(
@@ -79,6 +84,22 @@ export default class CaseListPage extends Component {
     this.props.navigation.navigate('CaseDetails', {
       data: this.state.selectItem
     })
+  }
+  /* transNewSite = (flag) => {
+    this.props.navigation.navigate('NewCase', {
+      getSaveData: this.getSaveData.bind(this),
+      data: !flag ? this.state.selectItem : null
+    });
+  } */
+
+  getSaveData(value) {
+    this.setState({
+      pageListView: []
+    })
+    this.setState({
+      pageListView: [].concat([{ componentID: "c" + parseInt(Math.random() * 1000) }])
+    })
+    console.log("保存成功了.");
   }
   deleteItem = () => {
     if (!this.state.selectItem) {
@@ -151,19 +172,20 @@ export default class CaseListPage extends Component {
           </View>
         </View>
         <View style={styles.body}>
-          {/* <FlatList
-            data={this.state.data}
-            extraData={this.state}
-            renderItem={this._renderList}
-            keyExtractor={this._setIndex} removeClippedSubviews disableVirtualization>
-          </FlatList> */}
-          <PageListView
-            pageLen={15}
-            extraData={this.state}
-            renderRow={this._renderList}
-            refresh={this._refresh}
-            loadMore={this._loadMore}
-          ></PageListView>
+          {
+            this.state.pageListView.map((item, index) => {
+              return <PageListView
+                key={index}
+                componentID={item.componentID}
+                pageLen={1500}
+                extraData={this.state}
+                renderRow={this._renderList}
+                refresh={this._refresh}
+                loadMore={this._loadMore}
+              ></PageListView>
+            })
+          }
+
         </View>
         <ActionButton buttonColor="rgba(231,76,60,1)"
           size={30} active={this.state.showAction} position="right"
@@ -185,9 +207,9 @@ export default class CaseListPage extends Component {
           <ActionButton.Item buttonColor='#FFA500' onPress={() => { }}>
             <Icon name="md-arrow-round-up" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
+          {/* <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
             <Icon name="md-download" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
+          </ActionButton.Item> */}
         </ActionButton>
       </View>
     )
@@ -195,27 +217,27 @@ export default class CaseListPage extends Component {
   _renderList = (item, index) => {
     return (
       <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
-        <View style={[styles.top, styles.itemBg, (this.state.showAction && this.state.selectItem.id === item.id) ? styles.selected : null]}>
+        <View style={[styles.top, styles.itemBg, (this.state.showAction && this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.reportingName || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.seized_place || ''}</Text>
+          </View>
+          <View style={[styles.textWrap, styles.textViewWrap]}>
+            <Text style={styles.bItem}>{item.statusname || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.address || ''}</Text>
+            <Text style={styles.bItem}>{item.weight || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.timeLimitStart || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.typeShip || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.owner || ''}</Text>
-          </View>
-          <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.money || ''}</Text>
+            <Text style={styles.bItem}>{item.fine_amount || ''}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -230,25 +252,41 @@ export default class CaseListPage extends Component {
     })
   }
   _refresh = (callBack) => {
-    fetchRequest('api/statisticsList', 'POST', {
-      page: 1,
-      name: 'admin'
-    })
-      .then(res => {
-        this.setState({ data: res.body });
-        let total = 0, moneyAll = 0;
-        res.body.forEach(item => {
-          total += item.lnumber;
-          moneyAll += item.money;
-        })
-        this.setState({
-          total: total,
-          moneyAll: moneyAll
-        })
-        callBack(res.body);
-      }).catch(err => {
-        console.log(err);
+    AsyncStorage.getItem('userInfo', (error, result) => {
+      if (error) {
+        console.log("home error ===>", error);
+      };
+      this.setState({
+        storage: JSON.parse(result)
+      });
+      console.log("案件上报===>", JSON.parse(result));
+      fetchRequest('rest/ShowCasenListJson', 'POST', {
+        "employeeName": this.state.storage.employeeName,
+        "organizationName": "",
+        "psdwId": "",
+        "departmentId": "",
+        "idpath": "",
+        "firstorgid": "",
+        "firstorgidpath": "",
+        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
+        "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
+        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
+        "admindivname": this.state.storage.admindivname,
+        "roleid": this.state.storage.roleid
       })
+        .then(res => {
+          console.log(res);
+          const data = res.row.map((item, i) => {
+            item.index = i + 1;
+            return item;
+          })
+          this.setState({ data: data });
+          callBack(data);
+        }).catch(err => {
+          console.log(err);
+        })
+    })
+
   }
   _loadMore = (page = 2, callBack) => {
     fetchRequest('api/statisticsList', 'POST', {
