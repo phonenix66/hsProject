@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ScrollView } from 'react-native';
+import Orientation from 'react-native-orientation';
 const width = Dimensions.get('window').width;
 export default class RulePage extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -24,7 +25,10 @@ export default class RulePage extends Component {
       )
     }
   }
-
+  constructor(props) {
+    super(props);
+    Orientation.lockToPortrait();
+  }
   render() {
     return (
       <ScrollView>

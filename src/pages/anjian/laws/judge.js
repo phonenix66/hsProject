@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
+import Orientation from 'react-native-orientation';
+import PhotoView from 'react-native-photo-view';
+
 const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
 export default class JudgePage extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -24,11 +28,22 @@ export default class JudgePage extends Component {
       )
     }
   }
+  componentDidMount() {
+
+  }
+  constructor(props) {
+    super(props);
+    Orientation.lockToPortrait();
+  }
   render() {
     return (
-      <View>
-        <Text>judge</Text>
-      </View>
+      <PhotoView
+        source={require('../../../assets/img/biaozhun.jpg')}
+        minimumZoomScale={0.5}
+        maximumZoomScale={4}
+        androidScaleType="centerInside"
+        onLoad={() => console.log("Image loaded!")}
+        style={styles.backgroundImage} />
     )
   }
 }
@@ -47,4 +62,9 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
   },
+  backgroundImage: {
+    flex: 1,
+    width: null,
+    height: null
+  }
 })

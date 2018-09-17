@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import Orientation from 'react-native-orientation';
 const width = Dimensions.get('window').width;
 export default class PenalPage extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -23,6 +24,10 @@ export default class PenalPage extends Component {
         </TouchableOpacity>
       )
     }
+  }
+  constructor(props) {
+    super(props);
+    Orientation.lockToPortrait();
   }
   render() {
     return (

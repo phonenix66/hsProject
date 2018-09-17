@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, BackHandler, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
 import moment from 'moment';
+import Orientation from 'react-native-orientation';
 const width = Dimensions.get('window').width;
 
 export default class CaseDetailsPage extends React.Component {
@@ -28,6 +29,7 @@ export default class CaseDetailsPage extends React.Component {
   }
   constructor(props) {
     super(props);
+    Orientation.lockToLandscape();
     this.state = {
       data: this.props.navigation.state.params.data
     }

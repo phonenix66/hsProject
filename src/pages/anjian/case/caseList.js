@@ -3,6 +3,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, Image, Dimensions,
   FlatList, Alert, AsyncStorage
 } from 'react-native';
+import Orientation from 'react-native-orientation';
 import { fetchRequest } from '../../../services/httpServices';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -35,6 +36,7 @@ export default class CaseListPage extends Component {
   }
   constructor(props) {
     super(props);
+    Orientation.lockToLandscape();
     this.state = {
       data: [],
       selectItem: null,
@@ -46,13 +48,7 @@ export default class CaseListPage extends Component {
     }
   }
   componentDidMount() {
-    /* const serviceName = 'rest/ShowCasenListJson';
-    fetchRequest(serviceName, 'POST', { ...this.state })
-      .then(res => {
-        this.setState({
-          data: res.row
-        })
-      }) */
+
   }
   pageToEdit = (flag) => {
     /* if (flag) {

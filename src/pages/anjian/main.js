@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { NineListView } from './NineListView';
+import Orientation from 'react-native-orientation';
 const dataSource = require('./data.json');
 
 const width = Dimensions.get('window').width;
@@ -27,6 +28,10 @@ export default class MainPage extends Component {
         </TouchableOpacity>
       )
     }
+  }
+  constructor(props) {
+    super(props);
+    Orientation.lockToPortrait();
   }
   render() {
     console.log(dataSource);
