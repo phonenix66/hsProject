@@ -11,6 +11,10 @@ import NewCasePage from '../pages/anjian/case/newCase';
 import CaseListPage from '../pages/anjian/case/caseList';
 import SearchListPage from '../pages/anjian/search/list';
 import CaseDetailsPage from '../pages/anjian/case/details';
+import BlackListPage from '../pages/anjian/black/blackList';
+import SuperviseListPage from '../pages/anjian/supervise/superviseList';
+import BlackDetailsPage from '../pages/anjian/black/blackItemDetail';
+import SuperviseDetailsPage from '../pages/anjian/supervise/superviseDetail';
 const router = {
   Main: {
     screen: MainPage
@@ -53,6 +57,20 @@ const router = {
   /*案件查询*/
   SearchList: {
     screen: SearchListPage
+  },
+  /*黑名单*/
+  BlackList: {
+    screen: BlackListPage
+  },
+  BlackDetails: {
+    screen: BlackDetailsPage
+  },
+  /*督办*/
+  SuperviseList: {
+    screen: SuperviseListPage
+  },
+  SuperviseDetails: {
+    screen: SuperviseDetailsPage
   },
   initialRouteName: 'Main'
 }

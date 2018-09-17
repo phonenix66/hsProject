@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, BackHandler, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
 import moment from 'moment';
 import Orientation from 'react-native-orientation';
+import { boatType, breakType } from '../typeData';
+
 const width = Dimensions.get('window').width;
 
-export default class CaseDetailsPage extends React.Component {
+export default class BlackDetailsPage extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
       title: navigation.state.params.data.name,
@@ -33,7 +35,7 @@ export default class CaseDetailsPage extends React.Component {
     this.state = {
       data: this.props.navigation.state.params.data
     }
-    console.log(this.props.navigation.state.params.data);
+    console.log(boatType, this.props.navigation.state.params.data);
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.navigation.pop();
       return true;
@@ -46,8 +48,8 @@ export default class CaseDetailsPage extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>填报单位</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.reportingName}</Text>
+            <Text style={[styles.text, styles.txtRight]}>单位</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.reportingName || ''}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>查获日期</Text>
@@ -79,7 +81,7 @@ export default class CaseDetailsPage extends React.Component {
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采(运)砂总量(吨) </Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.weight}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.weight || '0'}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>没收违法所得数额(万元) </Text>
@@ -96,6 +98,10 @@ export default class CaseDetailsPage extends React.Component {
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>是否没收采砂船舶</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.confiscation_ship ? '是' : '否'}</Text>
+          </View>
+          <View style={styles.lineItem}>
+            <Text style={[styles.text, styles.txtRight]}>上报</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.is_reported}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>结案日期</Text>

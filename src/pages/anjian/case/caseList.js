@@ -282,7 +282,6 @@ export default class CaseListPage extends Component {
           console.log(err);
         })
     })
-
   }
   _loadMore = (page = 2, callBack) => {
     fetchRequest('api/statisticsList', 'POST', {
