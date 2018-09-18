@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  Image, Dimensions, ScrollView, TextInput, Picker, AsyncStorage
+  Image, Dimensions, ScrollView, TextInput, Picker, AsyncStorage, Alert
 } from 'react-native';
 import Orientation from 'react-native-orientation';
 import DatePicker from 'react-native-datepicker';
@@ -36,7 +36,6 @@ export default class NewCasePage extends Component {
   }
   constructor(props) {
     super(props);
-
     this.navParams = this.props.navigation.state.params.data;
     console.log("case edit", this.navParams);
 
@@ -52,7 +51,7 @@ export default class NewCasePage extends Component {
       confiscation_ship: this.navParams ? this.navParams.confiscation_ship + '' : '0', //是否没收采砂船舶 1是0否
       weight: this.navParams ? this.navParams.weight + '' : '', //采砂总量
       seized_place: this.navParams ? this.navParams.seized_place : '',//查获地点(水域)
-      ship_no: this.navParams ? this.navParams.ship_no : '', //船名船号
+      ship_no: this.navParams ? ((this.navParams.ship_no == '无船名船号') ? '' : this.navParams.ship_no) : '', //船名船号
       status: this.navParams ? this.navParams.status + '' : '0',  //违法类型
       seizure_amount: this.navParams ? this.navParams.seizure_amount + '' : '' //没收违法所得数额
     }
@@ -274,8 +273,61 @@ export default class NewCasePage extends Component {
       </ScrollView>
     )
   }
+  validateItem = (data) => {
+    const {
+      seized_date,
+      close_date,
+      code,
+      name,
+      type,
+      fine_amount,
+      weight,
+      seized_place,
+      status,
+      seizure_amount } = data;
+    const flag = false;
+    if (!seized_date) {
+      this.alertHadnle('请输入查获日期');
+      return flag;
+    } else if (!close_date) {
+      this.alertHadnle('请输入结案日期');
+      return flag;
+    } else if (!code) {
+      this.alertHadnle('请输入身份证');
+      return flag;
+    } else if (!name) {
+      this.alertHadnle('请输入姓名');
+      return flag;
+    } else if (!type) {
+      this.alertHadnle('请选择采砂类型');
+      return flag;
+    } else if (!fine_amount) {
+      this.alertHadnle('请输入罚款数额');
+      return flag;
+    } else if (!weight) {
+      this.alertHadnle('请输违法采（运）砂总量');
+      return flag;
+    } else if (!seized_place) {
+      this.alertHadnle('请输入查获地点');
+      return flag;
+    } else if (!status) {
+      this.alertHadnle('请选择违法类型');
+      return flag;
+    } else if (!seizure_amount) {
+      this.alertHadnle('请输入没收违法所得数额');
+      return flag;
+    }
+    return true;
+  }
+  alertHadnle = (text) => {
+    Alert.alert(
+      '提示',
+      text,
+      [
+        { text: '确定', onPress: () => { } }
+      ]);
+  }
   _saveData = () => {
-    Loading.show();
     const {
       seized_date,
       close_date,
@@ -289,7 +341,7 @@ export default class NewCasePage extends Component {
       seized_place,
       ship_no,
       status,
-      seizure_amount
+      seizure_amount,
     } = this.state;
     const saveData = {
       seized_date,
@@ -305,13 +357,17 @@ export default class NewCasePage extends Component {
       confiscationname: (confiscation_ship == 1) ? '是' : '否',
       weight: Number(weight),
       seized_place,
-      ship_no,
+      ship_no: ship_no ? ship_no : '无船名船号',
       status: Number(status),
       statusname: "违法采砂",
       seizure_amount,
       caseid: '0'
     }
-    console.log(saveData);
+
+    const flag = this.validateItem(saveData);
+    console.log("保存验证", saveData, flag);
+    if (!flag) return;
+    Loading.show();
     AsyncStorage.getItem('userInfo', (error, result) => {
       Object.assign(saveData, JSON.parse(result));
       fetchRequest('rest/SaveCasenJson', 'POST', saveData).then((res) => {

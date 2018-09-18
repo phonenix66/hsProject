@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
   View, ScrollView, Text, Image, StyleSheet,
-  Dimensions, BackHandler, TouchableOpacity, Switch, Picker, AsyncStorage
+  Dimensions, BackHandler, TouchableOpacity, Switch, Picker, AsyncStorage, Alert
 } from 'react-native';
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -67,7 +67,7 @@ export default class NewSite extends Component {
       dateComponentArray: [],
       permissionid: this.navParams ? (this.navParams.permissionid + '') : "0" //新增更新id
     }
-    if (this.navParams.liscense_period) {
+    if (this.navParams && this.navParams.liscense_period) {
       const liscense_period = this.navParams.liscense_period.split(',');
       this.state.dateComponentArray = liscense_period.map((item, index) => {
         return {
@@ -194,6 +194,7 @@ export default class NewSite extends Component {
                 onChangeText={(text) => { this.setState({ permissionCard_no: text }) }}
               />
               <Fumi
+                keyboardType={'numeric'}
                 label={'许可采量'}
                 labelStyle={{ color: '#a3a3a3' }}
                 inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
@@ -258,6 +259,7 @@ export default class NewSite extends Component {
                 onChangeText={(text) => { this.setState({ ship_name: text }) }}
               />
               <Fumi
+                keyboardType={'numeric'}
                 label={'采砂功率（KW）'}
                 labelStyle={{ color: '#a3a3a3' }}
                 inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
@@ -282,6 +284,7 @@ export default class NewSite extends Component {
               <View style={styles.coordinate}>
                 <View style={styles.itemCoor}>
                   <Fumi
+                    keyboardType={'numeric'}
                     label={'经度'}
                     labelStyle={{ color: '#a3a3a3' }}
                     inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
@@ -295,6 +298,7 @@ export default class NewSite extends Component {
                 </View>
                 <View style={styles.itemCoor}>
                   <Fumi
+                    keyboardType={'numeric'}
                     label={'纬度'}
                     labelStyle={{ color: '#a3a3a3' }}
                     inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
@@ -308,6 +312,7 @@ export default class NewSite extends Component {
                 </View>
               </View>
               <Fumi
+                keyboardType={'numeric'}
                 label={'砂石资源矿业权出让收益征收（万元）'}
                 labelStyle={{ color: '#a3a3a3' }}
                 inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
@@ -370,9 +375,67 @@ export default class NewSite extends Component {
       </View>
     )
   }
+  validateItem = (data) => {
+    const { sandpro_name, river_name, permissionCard_no, liscense_production, perm_place, ship_name, sand_extraction_power, liscense_person, longitude, latitude, person, phone, department, benifit } = data;
+    const flag = false;
+    if (!sandpro_name) {
+      this.alertHadnle('请输入采砂项目名称');
+      return flag;
+    } else if (!river_name) {
+      this.alertHadnle('请输入河流名称');
+      return flag;
+    } else if (!permissionCard_no) {
+      this.alertHadnle('请输入许可证编号');
+      return flag;
+    } else if (!liscense_production) {
+      this.alertHadnle('请输入许可采量');
+      return flag;
+    } else if (!perm_place) {
+      this.alertHadnle('请输入许可具体地点');
+      return flag;
+    } else if (!ship_name) {
+      this.alertHadnle('请输入许可船舶');
+      return flag;
+    } else if (!sand_extraction_power) {
+      this.alertHadnle('请输入采砂功率');
+      return flag;
+    } else if (!liscense_person) {
+      this.alertHadnle('请输入采砂业主');
+      return flag;
+    } else if (!longitude) {
+      this.alertHadnle('请输入经度');
+      return flag;
+    } else if (!latitude) {
+      this.alertHadnle('请输入纬度');
+      return flag;
+    } else if (!benifit) {
+      this.alertHadnle('请输入砂石资源矿业权出让收益');
+      return flag;
+    } else if (!department) {
+      this.alertHadnle('请输入现场监管单位');
+      return flag;
+    } else if (!person) {
+      this.alertHadnle('请输入现场监管责任人');
+      return flag;
+    } else if (!phone) {
+      this.alertHadnle('请输入现场监管责任人电话');
+      return flag;
+    }
+    return true;
+  }
+  alertHadnle = (text) => {
+    Alert.alert(
+      '提示',
+      text,
+      [
+        { text: '确定', onPress: () => { } }
+      ]);
+  }
   saveHandle = () => {
-    Loading.show();
     const { sandpro_name, river_name, permissionCard_no, liscense_production, liscense_production_type, perm_place, ship_name, sand_extraction_power, liscense_person, benifit, department, person, phone, dateComponentArray, coordinates, longitude, latitude, permissionid } = this.state;
+    const flag = this.validateItem(this.state);
+    console.log('保存验证', flag, this.state);
+    return;
     const saveData = {
       sandpro_name,
       river_name,
@@ -396,6 +459,7 @@ export default class NewSite extends Component {
     saveData.liscense_period = dateList.join(',');
     saveData.coordinates = [longitude, latitude].join(',');
     //console.log(saveData);
+    Loading.show();
     AsyncStorage.getItem('userInfo', (error, result) => {
       Object.assign(saveData, JSON.parse(result));
       fetchRequest('rest/SavePermissionJson', 'POST', saveData).then((res) => {

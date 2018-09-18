@@ -51,18 +51,21 @@ export default class CaseListPage extends Component {
 
   }
   pageToEdit = (flag) => {
-    /* if (flag) {
-      this.props.navigation.navigate('NewCase',)
-    } else { */
-    if (!this.state.selectItem) {
-      this.alertTips();
-      return;
+    if (flag) {
+      this.props.navigation.navigate('NewCase', {
+        getSaveData: this.getSaveData.bind(this),
+        data: null
+      })
+    } else {
+      if (!this.state.selectItem) {
+        this.alertTips();
+        return;
+      }
+      this.props.navigation.navigate('NewCase', {
+        getSaveData: this.getSaveData.bind(this),
+        data: !flag ? this.state.selectItem : null
+      })
     }
-    this.props.navigation.navigate('NewCase', {
-      getSaveData: this.getSaveData.bind(this),
-      data: !flag ? this.state.selectItem : null
-    })
-    //}
   }
   alertTips() {
     Alert.alert(
@@ -102,7 +105,7 @@ export default class CaseListPage extends Component {
       this.alertTips();
       return;
     }
-    const itemId = this.state.selectItem.id;
+    const itemId = this.state.selectItem.caseid;
     Alert.alert(
       '提示',
       '确定要删除此项许可',
@@ -246,6 +249,18 @@ export default class CaseListPage extends Component {
     this.props.navigation.navigate('NewCase', {
       data: item
     })
+  }
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('userInfo');
+      if (value !== null) {
+        // We have data!!
+        console.log(value);
+        //return value;
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
   }
   _refresh = (callBack) => {
     AsyncStorage.getItem('userInfo', (error, result) => {

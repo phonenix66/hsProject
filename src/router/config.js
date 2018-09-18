@@ -16,14 +16,14 @@ import SuperviseListPage from '../pages/anjian/supervise/superviseList';
 import BlackDetailsPage from '../pages/anjian/black/blackItemDetail';
 import SuperviseDetailsPage from '../pages/anjian/supervise/superviseDetail';
 const router = {
+  Home: {
+    screen: HomeScreen
+  },
   Main: {
     screen: MainPage
   },
   Login: {
     screen: Login
-  },
-  Home: {
-    screen: HomeScreen
   },
   NewSite: {
     screen: NewSite
