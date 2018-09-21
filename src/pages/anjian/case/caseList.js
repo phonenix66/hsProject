@@ -233,10 +233,10 @@ export default class CaseListPage extends Component {
             <Text style={styles.bItem}>{item.name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.weight || ''}</Text>
+            <Text style={styles.bItem}>{item.weight || '0'}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.fine_amount || ''}</Text>
+            <Text style={styles.bItem}>{item.fine_amount || '0'}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -254,16 +254,47 @@ export default class CaseListPage extends Component {
     try {
       const value = await AsyncStorage.getItem('userInfo');
       if (value !== null) {
-        // We have data!!
         console.log(value);
-        //return value;
+        return value;
       }
     } catch (error) {
       // Error retrieving data
     }
   }
   _refresh = (callBack) => {
-    AsyncStorage.getItem('userInfo', (error, result) => {
+    this._retrieveData().then(result => {
+      this.setState({
+        storage: JSON.parse(result)
+      });
+      console.log("案件上报===>", JSON.parse(result));
+      const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = this.state.storage;
+      fetchRequest('rest/ShowCasenListJson', 'POST', {
+        "employeeName": this.state.storage.employeeName,
+        "organizationName": "",
+        "psdwId": "",
+        "departmentId": "",
+        "idpath": "",
+        "firstorgid": "",
+        "firstorgidpath": "",
+        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
+        "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
+        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
+        "admindivname": this.state.storage.admindivname,
+        "roleid": this.state.storage.roleid
+      })
+        .then(res => {
+          //console.log(res);
+          const data = res.row.map((item, i) => {
+            item.index = i + 1;
+            return item;
+          })
+          this.setState({ data: data });
+          callBack(data);
+        }).catch(err => {
+          console.log(err);
+        })
+    })
+    /* AsyncStorage.getItem('userInfo', (error, result) => {
       if (error) {
         console.log("home error ===>", error);
       };
@@ -296,7 +327,7 @@ export default class CaseListPage extends Component {
         }).catch(err => {
           console.log(err);
         })
-    })
+    }) */
   }
   _loadMore = (page = 2, callBack) => {
     fetchRequest('api/statisticsList', 'POST', {

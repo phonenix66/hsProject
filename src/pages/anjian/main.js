@@ -31,7 +31,7 @@ export default class MainPage extends Component {
   }
   constructor(props) {
     super(props);
-    Orientation.lockToPortrait();
+    Orientation.lockToLandscape();
   }
   render() {
     console.log(dataSource);

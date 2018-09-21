@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, AsyncStora
 import PageListView from 'react-native-page-listview';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
+import { fetchRequest } from '../../../services/httpServices';
 const width = Dimensions.get('window').width;
 export default class BlackListPage extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -77,7 +78,7 @@ export default class BlackListPage extends Component {
   _renderList = (item, index) => {
     return (
       <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
-        <View style={[styles.top, styles.itemBg, (this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
+        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>
@@ -94,10 +95,10 @@ export default class BlackListPage extends Component {
             <Text style={styles.bItem}>{item.name || ''}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.seizure_amount || ''}</Text>
+            <Text style={styles.bItem}>{item.seizure_amount || '0'}</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
-            <Text style={styles.bItem}>{item.fine_amount || ''}</Text>
+            <Text style={styles.bItem}>{item.fine_amount || '0'}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -108,14 +109,15 @@ export default class BlackListPage extends Component {
       selectItem: item
     });
     this.props.navigation.navigate('BlackDetails', {
-      data: this.state.selectItem
+      data: item
     })
   }
+  _getUserInfo = async () => {
+    const result = await AsyncStorage.getItem('userInfo');
+    return result;
+  }
   _refresh = (callBack) => {
-    AsyncStorage.getItem('userInfo', (error, result) => {
-      if (error) {
-        console.log("black error ===>", error);
-      };
+    this._getUserInfo().then(result => {
       this.setState({
         storage: JSON.parse(result)
       });
@@ -125,7 +127,7 @@ export default class BlackListPage extends Component {
         employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid
       })
         .then(res => {
-          console.log(res);
+          //console.log(res);
           const data = res.row.map((item, i) => {
             item.index = i + 1;
             return item;
@@ -135,7 +137,7 @@ export default class BlackListPage extends Component {
         }).catch(err => {
           console.log(err);
         })
-    })
+    });
   }
   _loadMore = (page = 2, callBack) => {
     const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid } = this.state.storage;
@@ -201,4 +203,19 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
   },
+  textViewWrap: {
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#e2e2e2'
+  },
+  bItem: {
+    fontSize: 10,
+    color: '#3f3f3f'
+  },
+  selected: {
+    backgroundColor: '#dcdcdc'
+  },
+  itemBg: {
+    backgroundColor: '#fff'
+  }
 })

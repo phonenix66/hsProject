@@ -6,12 +6,10 @@ import {
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
-import CheckBox from 'react-native-checkbox-heaven';
 import Button from '../../base/Button';
 import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
-//import DatePicker from 'react-native-datepicker';
-//import moment from 'moment';
+
 import LimitDateComponent from './LimitDate';
 import { Item } from 'native-base';
 
@@ -433,9 +431,6 @@ export default class NewSite extends Component {
   }
   saveHandle = () => {
     const { sandpro_name, river_name, permissionCard_no, liscense_production, liscense_production_type, perm_place, ship_name, sand_extraction_power, liscense_person, benifit, department, person, phone, dateComponentArray, coordinates, longitude, latitude, permissionid } = this.state;
-    const flag = this.validateItem(this.state);
-    console.log('保存验证', flag, this.state);
-    return;
     const saveData = {
       sandpro_name,
       river_name,
@@ -453,9 +448,22 @@ export default class NewSite extends Component {
       coordinates,
       permissionid
     }
+
+    const flag = this.validateItem(this.state);
     const dateList = dateComponentArray.map(item => {
-      return item.timeStart + '~' + item.timeEnd
+      if (item.timeStart && item.timeEnd) {
+        return item.timeStart + '~' + item.timeEnd
+      }
     })
+    if (!flag) {
+      return;
+    }
+    if (dateList.length === 0) {
+      this.alertHadnle('请输入许可期限');
+      return;
+    }
+    console.log('保存验证', flag, this.state);
+
     saveData.liscense_period = dateList.join(',');
     saveData.coordinates = [longitude, latitude].join(',');
     //console.log(saveData);

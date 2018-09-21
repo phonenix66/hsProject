@@ -1,6 +1,7 @@
-//const baseUrl = 'http://10.7.225.130:8000/';
+const baseUrl = 'http://10.7.225.130:8080/SPCRM/';
 //const baseUrl = 'http://219.140.162.169:8850/sand/';
-const baseUrl = 'http://10.6.181.55:8012/SPCRM/';
+//const baseUrl = 'http://10.6.181.55:8012/SPCRM/';
+
 const token = '';
 
 /**

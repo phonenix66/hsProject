@@ -9,12 +9,13 @@ import Button from '../../../base/Button';
 import { fetchRequest } from '../../../services/httpServices';
 import { Loading } from '../../../base/Loading';
 import moment from 'moment';
+import { boatType, breakType } from '../typeData';
 const width = Dimensions.get('window').width;
 
 export default class NewCasePage extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: '采砂违法信息录入',
+      title: '案件上报',
       headerStyle: {
         backgroundColor: '#0079cc',
         height: 30
@@ -138,7 +139,7 @@ export default class NewCasePage extends Component {
                   <Picker
                     selectedValue={this.state.type}
                     style={{ height: 50, width: '100%' }}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ type: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this._boatTypeChange(itemValue, itemIndex)}>
                     <Picker.Item label="请选择" value="0" />
                     <Picker.Item label="自采自运式采砂船" value="2" />
                     <Picker.Item label="小型吸砂船" value="3" />
@@ -327,6 +328,11 @@ export default class NewCasePage extends Component {
         { text: '确定', onPress: () => { } }
       ]);
   }
+  _boatTypeChange = (value, index) => {
+    this.setState({
+      type: value
+    })
+  }
   _saveData = () => {
     const {
       seized_date,
@@ -352,15 +358,15 @@ export default class NewCasePage extends Component {
       typename: "小型吸砂船",
       confiscation_equipment: confiscation_equipment + '',
       confiscationShipName: (confiscation_equipment == 1) ? '是' : '否',
-      fine_amount,
+      fine_amount: Number(fine_amount).toFixed(3) + '',
       confiscation_ship: confiscation_ship + '',
       confiscationname: (confiscation_ship == 1) ? '是' : '否',
-      weight: Number(weight),
+      weight: Math.floor(weight),
       seized_place,
       ship_no: ship_no ? ship_no : '无船名船号',
       status: Number(status),
       statusname: "违法采砂",
-      seizure_amount,
+      seizure_amount: Number(seizure_amount).toFixed(3),
       caseid: '0'
     }
 
