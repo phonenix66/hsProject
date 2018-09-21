@@ -60,23 +60,23 @@ export default class Login extends Component {
   _storeData = async (res) => {
     const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = res;
     try {
-      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid }))
+      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid }));
     } catch (error) {
       console.log(error);
     }
 
   }
   toA = async () => {
-    this.props.navigation.navigate('Home');
-    try {
-      const value = await AsyncStorage.getItem('userInfo');
-      console.log(value);
-    } catch (error) {
-      console.log(error);
+    const value = await AsyncStorage.getItem('userInfo');
+    //console.log(value);
+    if (value) {
+      this.props.navigation.navigate('Home');
     }
-
   }
-  toB = () => {
+  toB = async () => {
+    const value = await AsyncStorage.getItem('userInfo');
+    if (!value) return;
+    console.log("b", value);
     this.props.navigation.navigate('Main');
   }
   render() {

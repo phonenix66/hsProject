@@ -8,6 +8,7 @@ import { fetchRequest } from '../../../services/httpServices';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../../base/Loading';
+import { Toast } from '../../../base/Toast';
 import PageListView from 'react-native-page-listview';
 
 const width = Dimensions.get('window').width;
@@ -105,26 +106,34 @@ export default class CaseListPage extends Component {
       this.alertTips();
       return;
     }
-    const itemId = this.state.selectItem.caseid;
-    Alert.alert(
-      '提示',
-      '确定要删除此项许可',
-      [
-        { text: '取消', onPress: () => { }, style: 'cancel' },
-        {
-          text: '确定', onPress: () => {
-            Loading.show();
-            fetchRequest('api/deleteItem', 'POST', { id: itemId })
-              .then(res => {
-                Loading.hidden();
-                console.log(res);
-              }).catch(err => {
-                console.log(err);
-              })
+    const caseid = this.state.selectItem.caseid;
+    this._retrieveData().then(result => {
+      this.setState({
+        storage: JSON.parse(result)
+      });
+      Alert.alert(
+        '提示',
+        '确定要删除此项许可',
+        [
+          { text: '取消', onPress: () => { }, style: 'cancel' },
+          {
+            text: '确定', onPress: () => {
+              Loading.show();
+              fetchRequest('rest/deleteCaseJson', 'POST', { ...this.state.storage, caseid })
+                .then(res => {
+                  Loading.hidden();
+                  if (res.status === 0) {
+                    Toast.show('删除成功');
+                  }
+                }).catch(err => {
+                  console.log(err);
+                })
+            }
           }
-        }
-      ]
-    )
+        ]
+      )
+    })
+
   }
   resetActionButton = () => {
     this.setState(prevState => {
@@ -269,7 +278,7 @@ export default class CaseListPage extends Component {
       console.log("案件上报===>", JSON.parse(result));
       const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = this.state.storage;
       fetchRequest('rest/ShowCasenListJson', 'POST', {
-        "employeeName": this.state.storage.employeeName,
+        employeeName,
         "organizationName": "",
         "psdwId": "",
         "departmentId": "",
@@ -279,8 +288,8 @@ export default class CaseListPage extends Component {
         "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
         "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
         "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
-        "admindivname": this.state.storage.admindivname,
-        "roleid": this.state.storage.roleid
+        admindivname,
+        roleid
       })
         .then(res => {
           //console.log(res);
@@ -294,40 +303,6 @@ export default class CaseListPage extends Component {
           console.log(err);
         })
     })
-    /* AsyncStorage.getItem('userInfo', (error, result) => {
-      if (error) {
-        console.log("home error ===>", error);
-      };
-      this.setState({
-        storage: JSON.parse(result)
-      });
-      console.log("案件上报===>", JSON.parse(result));
-      fetchRequest('rest/ShowCasenListJson', 'POST', {
-        "employeeName": this.state.storage.employeeName,
-        "organizationName": "",
-        "psdwId": "",
-        "departmentId": "",
-        "idpath": "",
-        "firstorgid": "",
-        "firstorgidpath": "",
-        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
-        "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
-        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
-        "admindivname": this.state.storage.admindivname,
-        "roleid": this.state.storage.roleid
-      })
-        .then(res => {
-          console.log(res);
-          const data = res.row.map((item, i) => {
-            item.index = i + 1;
-            return item;
-          })
-          this.setState({ data: data });
-          callBack(data);
-        }).catch(err => {
-          console.log(err);
-        })
-    }) */
   }
   _loadMore = (page = 2, callBack) => {
     fetchRequest('api/statisticsList', 'POST', {

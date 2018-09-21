@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, AsyncStora
 import PageListView from 'react-native-page-listview';
 import Orientation from 'react-native-orientation';
 import moment from 'moment';
+import { fetchRequest } from '../../../services/httpServices';
 const width = Dimensions.get('window').width;
 export default class SuperviseListPage extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -68,7 +69,7 @@ export default class SuperviseListPage extends Component {
   _renderList = (item, index) => {
     return (
       <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
-        <View style={[styles.top, styles.itemBg, (this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
+        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.superviseId === item.superviseId) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>
@@ -90,7 +91,7 @@ export default class SuperviseListPage extends Component {
       selectItem: item
     });
     this.props.navigation.navigate('SuperviseDetails', {
-      data: this.state.selectItem
+      data: item
     })
   }
   _refresh = (callBack) => {
@@ -107,7 +108,7 @@ export default class SuperviseListPage extends Component {
         employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid
       })
         .then(res => {
-          console.log(res);
+          console.log("案件督办了", res);
           const data = res.row.map((item, i) => {
             item.index = i + 1;
             return item;
@@ -154,4 +155,48 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
   },
+  container: {
+    flex: 1,
+  },
+  top: {
+    flexDirection: 'row',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    backgroundColor: '#e0ebfd',
+  },
+  textIndex: {
+    flex: 1
+  },
+  textWrap: {
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#bfd6ff',
+  },
+  topItem: {
+    fontSize: 10,
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  body: {
+    flex: 1,
+  },
+  textViewWrap: {
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#e2e2e2'
+  },
+  bItem: {
+    fontSize: 10,
+    color: '#3f3f3f'
+  },
+  selected: {
+    backgroundColor: '#dcdcdc'
+  },
+  itemBg: {
+    backgroundColor: '#fff'
+  }
 })

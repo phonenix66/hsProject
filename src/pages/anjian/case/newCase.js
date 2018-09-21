@@ -47,6 +47,7 @@ export default class NewCasePage extends Component {
       code: this.navParams ? this.navParams.code : '',//身份证 
       name: this.navParams ? this.navParams.name : '', //业主
       type: this.navParams ? this.navParams.type + '' : 0, //船舶类型
+      typename: this.navParams ? this.navParams.typename : '',
       confiscation_equipment: this.navParams ? this.navParams.confiscation_equipment + '' : '0',  //1是0否
       fine_amount: this.navParams ? this.navParams.fine_amount + '' : '',//罚款数额
       confiscation_ship: this.navParams ? this.navParams.confiscation_ship + '' : '0', //是否没收采砂船舶 1是0否
@@ -54,6 +55,7 @@ export default class NewCasePage extends Component {
       seized_place: this.navParams ? this.navParams.seized_place : '',//查获地点(水域)
       ship_no: this.navParams ? ((this.navParams.ship_no == '无船名船号') ? '' : this.navParams.ship_no) : '', //船名船号
       status: this.navParams ? this.navParams.status + '' : '0',  //违法类型
+      statusname: this.navParams ? this.navParams.statusname : '',
       seizure_amount: this.navParams ? this.navParams.seizure_amount + '' : '' //没收违法所得数额
     }
   }
@@ -232,7 +234,7 @@ export default class NewCasePage extends Component {
                 <View style={styles.wrInput}>
                   <Picker selectedValue={this.state.status}
                     style={{ height: 50, width: '100%' }}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ status: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this._statusChange(itemValue, itemIndex)}>
                     <Picker.Item label="请选择" value="0" />
                     <Picker.Item label="违法采砂" value="12" />
                     <Picker.Item label="违法运砂" value="13" />
@@ -330,7 +332,22 @@ export default class NewCasePage extends Component {
   }
   _boatTypeChange = (value, index) => {
     this.setState({
-      type: value
+      type: value,
+      typename: boatType.map(item => {
+        if (item.type == value) {
+          return item.value;
+        }
+      }).join('')
+    })
+  }
+  _statusChange = (value, index) => {
+    this.setState({
+      status: value,
+      statusname: breakType.map(item => {
+        if (Number(item.type) == value) {
+          return item.value;
+        }
+      }).join('')
     })
   }
   _saveData = () => {
@@ -340,6 +357,7 @@ export default class NewCasePage extends Component {
       code,
       name,
       type,
+      typename,
       confiscation_equipment,
       fine_amount,
       confiscation_ship,
@@ -347,7 +365,9 @@ export default class NewCasePage extends Component {
       seized_place,
       ship_no,
       status,
+      statusname,
       seizure_amount,
+      caseid
     } = this.state;
     const saveData = {
       seized_date,
@@ -355,7 +375,7 @@ export default class NewCasePage extends Component {
       code,
       name,
       type: Number(type),
-      typename: "小型吸砂船",
+      typename,
       confiscation_equipment: confiscation_equipment + '',
       confiscationShipName: (confiscation_equipment == 1) ? '是' : '否',
       fine_amount: Number(fine_amount).toFixed(3) + '',
@@ -365,9 +385,9 @@ export default class NewCasePage extends Component {
       seized_place,
       ship_no: ship_no ? ship_no : '无船名船号',
       status: Number(status),
-      statusname: "违法采砂",
+      statusname,
       seizure_amount: Number(seizure_amount).toFixed(3),
-      caseid: '0'
+      caseid: caseid || '0'
     }
 
     const flag = this.validateItem(saveData);

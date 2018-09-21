@@ -2,8 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, BackHandler, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
 import moment from 'moment';
 import Orientation from 'react-native-orientation';
-import { boatType, breakType } from '../typeData';
-
+import PhotoView from 'react-native-photo-view';
 const width = Dimensions.get('window').width;
 
 export default class SuperviseDetailsPage extends React.Component {
@@ -32,10 +31,26 @@ export default class SuperviseDetailsPage extends React.Component {
   constructor(props) {
     super(props);
     Orientation.lockToLandscape();
+    const details = this.props.navigation.state.params.data;
+    const fileName = details.fileName.split(',');
+    const fileUrl = details.fileUrl.split(',');
+    const filesArr = fileName.map((item, index) => {
+      return {
+        name: item,
+        path: 'https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=205684034,2846006820&fm=173&app=25&f=JPEG?w=639&h=367&s=2DF04D85062222B001A9988A03008012'
+      }
+    })
+    console.log("文件信息", filesArr);
+    const imageUrls = filesArr.map(item => {
+      return {
+        url: item.path
+      };
+    })
     this.state = {
-      data: this.props.navigation.state.params.data
+      data: details,
+      files: filesArr,
+      imageUrls
     }
-    console.log(boatType, this.props.navigation.state.params.data);
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.navigation.pop();
       return true;
@@ -43,21 +58,39 @@ export default class SuperviseDetailsPage extends React.Component {
   }
 
   render() {
-    let data = this.state.data;
     return (
       <View style={styles.container}>
         <ScrollView>
-          <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>单位</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.reportingName || ''}</Text>
-          </View>
-          <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>结案日期</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{moment(data.close_date).format('YYYY-MM-DD')}</Text>
+          <View style={styles.imageWrap}>
+            {
+              this.state.files.map((item, index) => {
+                return <View key={'view' + index}><Text key={'title' + index} style={styles.title}>{item.name}</Text><PhotoView
+                  key={index}
+                  source={{ uri: item.path }}
+                  minimumZoomScale={1}
+                  maximumZoomScale={4}
+                  androidScaleType="centerInside"
+                  onLoad={() => this._loadTitle(index)}
+                  onTap={() => this._pageToImageView(index)}
+                  style={styles.backgroundImage} /></View>
+              })
+            }
           </View>
         </ScrollView>
       </View>
     )
+  }
+  _pageToImageView = (index) => {
+    this.props.navigation.navigate('ImageViewer', {
+      data: {
+        imageUrls: this.state.imageUrls,
+        numIndex: index
+      }
+    })
+  }
+  _loadTitle = (index) => {
+    console.log("title", index);
+    return (<Text>{this.state.files[index].name}</Text>);
   }
 }
 const styles = StyleSheet.create({
@@ -78,27 +111,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff'
   },
-  lineItem: {
+  imageWrap: {
     flex: 1,
-    flexDirection: 'row',
-
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff'
   },
-  text: {
-    flex: 1,
-    lineHeight: 34,
-    borderRightWidth: 1,
-    borderRightColor: '#e2e2e2',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e2e2',
-    height: 34,
-    fontSize: 10
+  backgroundImage: {
+    width: width,
+    height: 200,
+    backgroundColor: '#fff',
+    padding: 2,
+    margin: 0,
   },
-  txtRight: {
-    textAlign: 'right',
-    paddingRight: 12,
-  },
-  txtLeft: {
-    textAlign: 'left',
-    paddingLeft: 12,
+  title: {
+    textAlign: 'center'
   }
 })

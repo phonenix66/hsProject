@@ -9,12 +9,11 @@ import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../base/Loading';
 import PageListView from 'react-native-page-listview';
-import localStorage from '../../services/StorageTools';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: '2018年河道采砂许可项目统计表（统计时段：XXX年X月至XXX年X月）',
+      title: '2018年河道采砂许可项目统计表',
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
@@ -181,6 +180,7 @@ export default class HomeScreen extends React.Component {
     )
   }
   _refresh = (callBack) => {
+    console.log("homeList");
     AsyncStorage.getItem('userInfo', (error, result) => {
       if (error) {
         console.log("home error ===>", error);

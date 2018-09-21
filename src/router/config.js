@@ -15,6 +15,7 @@ import BlackListPage from '../pages/anjian/black/blackList';
 import SuperviseListPage from '../pages/anjian/supervise/superviseList';
 import BlackDetailsPage from '../pages/anjian/black/blackItemDetail';
 import SuperviseDetailsPage from '../pages/anjian/supervise/superviseDetail';
+import ImageViewerPage from '../pages/anjian/supervise/imageViewer';
 const router = {
   Login: {
     screen: Login
@@ -71,6 +72,9 @@ const router = {
   },
   SuperviseDetails: {
     screen: SuperviseDetailsPage
+  },
+  ImageViewer: {
+    screen: ImageViewerPage
   },
   initialRouteName: 'Login'
 }
