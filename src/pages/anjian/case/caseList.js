@@ -101,6 +101,22 @@ export default class CaseListPage extends Component {
     })
     console.log("保存成功了.");
   }
+  _reportedData = () => {
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
+    }
+    const reportedFlag = this.state.selectItem.is_reported;
+    if (reportedFlag === 1 || reportedFlag === 3) {
+      Alert.alert(
+        '提示',
+        '案件已经上报到' + ((reportedFlag === 1) ? '区' : '市'),
+        [
+          { text: '确定', onPress: () => { } }
+        ]);
+      return;
+    }
+  }
   deleteItem = () => {
     if (!this.state.selectItem) {
       this.alertTips();
@@ -113,7 +129,7 @@ export default class CaseListPage extends Component {
       });
       Alert.alert(
         '提示',
-        '确定要删除此项许可',
+        '确定要删除此案件吗?',
         [
           { text: '取消', onPress: () => { }, style: 'cancel' },
           {
@@ -121,9 +137,18 @@ export default class CaseListPage extends Component {
               Loading.show();
               fetchRequest('rest/deleteCaseJson', 'POST', { ...this.state.storage, caseid })
                 .then(res => {
-                  Loading.hidden();
+                  this.setState({
+                    pageListView: []
+                  });
+
                   if (res.status === 0) {
                     Toast.show('删除成功');
+                    Loading.hidden();
+                    this.setState({
+                      pageListView: [{
+                        componentID: "c_1"
+                      }]
+                    })
                   }
                 }).catch(err => {
                   console.log(err);
@@ -146,11 +171,15 @@ export default class CaseListPage extends Component {
     })
   }
   showActionSelect = (item) => {
+    console.log("选中案件", item);
     this.setState(prevState => {
       return {
-        selectItem: item,
+        selectItem: null,
         showAction: !prevState.showAction
       }
+    })
+    this.setState({
+      selectItem: item
     })
   }
   render() {
@@ -212,7 +241,7 @@ export default class CaseListPage extends Component {
           <ActionButton.Item buttonColor='#FF0000' onPress={this.deleteItem}>
             <Icon name="md-trash" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#FFA500' onPress={() => { }}>
+          <ActionButton.Item buttonColor='#FFA500' onPress={this._reportedData}>
             <Icon name="md-arrow-round-up" style={styles.actionButtonIcon} />
           </ActionButton.Item>
           {/* <ActionButton.Item buttonColor='#3498db' onPress={() => { }}>
@@ -224,8 +253,8 @@ export default class CaseListPage extends Component {
   }
   _renderList = (item, index) => {
     return (
-      <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
-        <View style={[styles.top, styles.itemBg, (this.state.showAction && this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
+      <TouchableOpacity onPressOut={() => this.showActionSelect(item)}>
+        <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>
           </View>

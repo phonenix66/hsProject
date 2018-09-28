@@ -91,6 +91,7 @@ export default class Login extends Component {
             <View>
               <TextInput style={[styles.input, styles.username]}
                 placeholder="请输入用户名"
+                numberOfLines={1}
                 underlineColorAndroid='transparent'
                 onChangeText={(text) => this.setState({ username: text })} />
             </View>
@@ -98,7 +99,9 @@ export default class Login extends Component {
             <View>
               <TextInput style={[styles.input, styles.password]}
                 placeholder="密码" password={true}
+                numberOfLines={1}
                 underlineColorAndroid='transparent'
+                secureTextEntry={true}
                 onChangeText={(password) => this.setState({ password })}></TextInput>
             </View>
             <TouchableOpacity style={styles.button} onPress={this.login}>

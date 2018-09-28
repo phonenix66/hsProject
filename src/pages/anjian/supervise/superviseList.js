@@ -68,7 +68,7 @@ export default class SuperviseListPage extends Component {
   }
   _renderList = (item, index) => {
     return (
-      <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
+      <TouchableOpacity onPressOut={() => { this.showActionSelect(item) }}>
         <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.superviseId === item.superviseId) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>

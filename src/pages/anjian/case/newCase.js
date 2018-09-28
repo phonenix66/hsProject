@@ -51,12 +51,12 @@ export default class NewCasePage extends Component {
       confiscation_equipment: this.navParams ? this.navParams.confiscation_equipment + '' : '0',  //1是0否
       fine_amount: this.navParams ? this.navParams.fine_amount + '' : '',//罚款数额
       confiscation_ship: this.navParams ? this.navParams.confiscation_ship + '' : '0', //是否没收采砂船舶 1是0否
-      weight: this.navParams ? this.navParams.weight + '' : '', //采砂总量
+      weight: this.navParams ? (!this.navParams.weight ? '0' : this.navParams.weight) + '' : '', //采砂总量
       seized_place: this.navParams ? this.navParams.seized_place : '',//查获地点(水域)
       ship_no: this.navParams ? ((this.navParams.ship_no == '无船名船号') ? '' : this.navParams.ship_no) : '', //船名船号
       status: this.navParams ? this.navParams.status + '' : '0',  //违法类型
       statusname: this.navParams ? this.navParams.statusname : '',
-      seizure_amount: this.navParams ? this.navParams.seizure_amount + '' : '' //没收违法所得数额
+      seizure_amount: this.navParams ? (!this.navParams.seizure_amount ? '0' : this.navParams.seizure_amount) + '' : '' //没收违法所得数额
     }
   }
   componentDidMount() {
@@ -378,10 +378,10 @@ export default class NewCasePage extends Component {
       typename,
       confiscation_equipment: confiscation_equipment + '',
       confiscationShipName: (confiscation_equipment == 1) ? '是' : '否',
-      fine_amount: Number(fine_amount).toFixed(3) + '',
+      fine_amount: Number(fine_amount).toFixed(3),
       confiscation_ship: confiscation_ship + '',
       confiscationname: (confiscation_ship == 1) ? '是' : '否',
-      weight: Math.floor(weight),
+      weight: Math.floor(Number(weight) * 100) / 100,
       seized_place,
       ship_no: ship_no ? ship_no : '无船名船号',
       status: Number(status),

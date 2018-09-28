@@ -31,13 +31,14 @@ export default class SuperviseDetailsPage extends React.Component {
   constructor(props) {
     super(props);
     Orientation.lockToLandscape();
+    const baseUrl = 'http://223.75.53.24:8861/';
     const details = this.props.navigation.state.params.data;
     const fileName = details.fileName.split(',');
     const fileUrl = details.fileUrl.split(',');
     const filesArr = fileName.map((item, index) => {
       return {
         name: item,
-        path: 'https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=205684034,2846006820&fm=173&app=25&f=JPEG?w=639&h=367&s=2DF04D85062222B001A9988A03008012'
+        path: baseUrl + fileUrl[index]
       }
     })
     console.log("文件信息", filesArr);

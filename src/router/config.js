@@ -56,9 +56,9 @@ const router = {
     screen: CaseDetailsPage
   },
   /*案件查询*/
-  SearchList: {
+  /* SearchList: {
     screen: SearchListPage
-  },
+  }, */
   /*黑名单*/
   BlackList: {
     screen: BlackListPage

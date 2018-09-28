@@ -77,7 +77,7 @@ export default class BlackListPage extends Component {
   }
   _renderList = (item, index) => {
     return (
-      <TouchableOpacity onPress={() => { this.showActionSelect(item) }}>
+      <TouchableOpacity onPressOut={() => { this.showActionSelect(item) }}>
         <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.caseid === item.caseid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>

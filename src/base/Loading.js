@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
   maskStyle: {
     position: 'absolute',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    width: width,
-    height: height,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export {Loading}
+export { Loading }

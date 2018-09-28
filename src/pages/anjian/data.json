@@ -27,11 +27,6 @@
     },
     {
       "icon": "../../assets/img/icon1.png",
-      "title": "案件查询",
-      "name": "SearchList"
-    },
-    {
-      "icon": "../../assets/img/icon1.png",
       "title": "黑名单",
       "name": "BlackList"
     },

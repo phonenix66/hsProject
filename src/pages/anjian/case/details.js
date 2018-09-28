@@ -79,11 +79,11 @@ export default class CaseDetailsPage extends React.Component {
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采(运)砂总量(吨) </Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.weight}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.weight || 0}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>没收违法所得数额(万元) </Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.seizure_amount}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.seizure_amount || 0}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>是否拆除和没收采砂机具</Text>
