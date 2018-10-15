@@ -1,37 +1,37 @@
 {
   "data": [
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/rules.png",
       "title": "管理条例",
       "name": "Rules"
     },
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/manage.png",
       "title": "管理办法",
       "name": "Manage"
     },
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/penal.png",
       "title": "非采入刑",
       "name": "Penal"
     },
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/judge.png",
       "title": "裁量标准",
       "name": "Judge"
     },
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/caselist.png",
       "title": "案件上报",
       "name": "CaseList"
     },
-    {
-      "icon": "../../assets/img/icon1.png",
+    { 
+      "icon": "http://223.75.53.24:8861/upload/images/icon/blacklist.png",
       "title": "黑名单",
       "name": "BlackList"
     },
     {
-      "icon": "../../assets/img/icon1.png",
+      "icon": "http://223.75.53.24:8861/upload/images/icon/superviseList.png",
       "title": "案件督办",
       "name": "SuperviseList"
     }

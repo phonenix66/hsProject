@@ -6,23 +6,21 @@ import {
   ListView,
   Image,
   Dimensions,
-  TouchableOpacity,
-  Alert
+  TouchableOpacity
 } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
-let columns = 3;
-let itemWidth = 100;
-let itemHeight = 120;
-let wMargins = (screenWidth - itemWidth * columns) / (columns + 1);
-let hMargins = 20;
+const columns = 3;
+const itemWidth = 100;
+const itemHeight = 120;
+const wMargins = (screenWidth - itemWidth * columns) / (columns + 1);
+const hMargins = 20;
 
 class NineListView extends Component {
   constructor(props) {
     super(props);
     //获取数据源
     const data = this.props.data;
-    const navigation = this.props.navigation;
     console.log(data);
     //创建ListView对象
     const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
@@ -51,7 +49,7 @@ class NineListView extends Component {
       >
         <View>
           <Image
-            source={require('../../assets/img/icon1.png')}
+            source={{ uri: rowData.icon }}
             style={{ width: 70, height: 70 }}
           />
           <Text style={styles.textStyle}>{rowData.title}</Text>

@@ -16,7 +16,7 @@ export default class JudgePage extends Component {
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
-        width: width - 150,
+        //width: width - 150,
         textAlign: 'center'
       },
       headerLeft: (
@@ -33,7 +33,7 @@ export default class JudgePage extends Component {
   }
   constructor(props) {
     super(props);
-    Orientation.lockToPortrait();
+    Orientation.lockToLandscape();
   }
   render() {
     return (

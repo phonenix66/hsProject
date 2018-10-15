@@ -23,18 +23,7 @@ export default class Login extends Component {
       storage: null
     }
   }
-  componentDidMount() {
-    /* localStorage.load({
-      key: "userInfo"
-    }).then(res => {
-      console.log(res);
-    }) */
-    /* AsyncStorage.getItem('userInfo', (error, result) => {
-      if (error) return;
-      this.setState({
-        storage: result
-      })
-    }) */
+  componentWillMount() {
     Orientation.lockToLandscape();
   }
   login = () => {
@@ -117,10 +106,10 @@ export default class Login extends Component {
             <Text style={styles.title}>入口选择</Text>
           </View>
           <View style={styles.inner}>
-            <Button text="河道采砂许可项目统计" onPress={this.toA}></Button>
+            <Button text="湖北省河道采砂规划与许可统计项目监管信息系统" onPress={this.toA}></Button>
           </View>
           <View style={styles.inner}>
-            <Button text="河道采砂违法案件管理系统" onPress={this.toB}></Button>
+            <Button text="湖北省河道采砂违法案件管理系统" onPress={this.toB}></Button>
           </View>
         </ImageBackground>
       );

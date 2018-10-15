@@ -17,9 +17,7 @@ export default class HomeScreen extends React.Component {
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
-        alignSelf: 'center',
         textAlign: 'center',
-        width: '100%'
       },
       headerStyle: {
         backgroundColor: '#0079cc',
@@ -43,7 +41,6 @@ export default class HomeScreen extends React.Component {
       showAction: false,
       selectItem: null,
       storage: null,
-      refresh: false,
       PL: null,
       pageListView: [{
         componentID: 'c_0'
@@ -141,7 +138,7 @@ export default class HomeScreen extends React.Component {
   }
   _renderList = (item, index) => {
     return (
-      <TouchableOpacity onPress={() => this.showActionSelect(item)}>
+      <TouchableOpacity onPressOut={() => this.showActionSelect(item)}>
         <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.permissionid === item.permissionid) ? styles.selected : null]}>
           <View style={[styles.textWrap, styles.textIndex, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.index || ''}</Text>

@@ -16,7 +16,7 @@ export default class SuperviseListPage extends Component {
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
-        width: width - 150,
+        //width: width - 150,
         textAlign: 'center'
       },
       headerLeft: (

@@ -17,7 +17,7 @@ export default class MainPage extends Component {
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
-        width: width - 150,
+        //width: width - 150,
         textAlign: 'center'
       },
       headerLeft: (
@@ -33,6 +33,7 @@ export default class MainPage extends Component {
     super(props);
   }
   componentWillMount() {
+    console.log("main-----横批切换");
     Orientation.lockToLandscape();
   }
   render() {

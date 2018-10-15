@@ -17,6 +17,7 @@ import BlackDetailsPage from '../pages/anjian/black/blackItemDetail';
 import SuperviseDetailsPage from '../pages/anjian/supervise/superviseDetail';
 import ImageViewerPage from '../pages/anjian/supervise/imageViewer';
 const router = {
+
   Login: {
     screen: Login
   },

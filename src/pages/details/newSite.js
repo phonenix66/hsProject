@@ -11,7 +11,7 @@ import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
 
 import LimitDateComponent from './LimitDate';
-import { Item } from 'native-base';
+import CoordinateComponent from './coordinate';
 
 const width = Dimensions.get('window').width;
 export default class NewSite extends Component {
@@ -26,7 +26,7 @@ export default class NewSite extends Component {
       headerTitleStyle: {
         fontSize: 10,
         color: '#fff',
-        width: width - 150,
+        //width: width - 150,
         textAlign: 'center'
       },
       headerLeft: (
@@ -59,10 +59,11 @@ export default class NewSite extends Component {
       department: this.navParams ? this.navParams.department : '',
       person: this.navParams ? this.navParams.person : '',
       phone: this.navParams ? this.navParams.phone : '',
-      longitude: '',//经度
-      latitude: '',//纬度
+      longitude: [],//经度
+      latitude: [],//纬度
       liscense_period: '',
       dateComponentArray: [],
+      points: [],
       permissionid: this.navParams ? (this.navParams.permissionid + '') : "0" //新增更新id
     }
     if (this.navParams && this.navParams.liscense_period) {
@@ -85,8 +86,32 @@ export default class NewSite extends Component {
     }
     if (this.state.coordinates) {
       const coordinates = this.state.coordinates.split(',');
-      this.state.longitude = coordinates[0];
-      this.state.latitude = coordinates[1];
+      const longitude = [];
+      const latitude = [];
+      coordinates.forEach((a, i) => {
+        if (i % 2 === 0) {
+          longitude.push(a);
+        } else {
+          latitude.push(a);
+        }
+      })
+      this.state.longitude = longitude;
+      this.state.latitude = latitude;
+      this.state.points = longitude.map((a, i) => {
+        return {
+          id: 'point' + i,
+          num: i,
+          jdlong: a,
+          wdlat: latitude[i]
+        }
+      })
+    } else {
+      this.state.points = [{
+        id: 'point0',
+        num: 0,
+        jdlong: '',
+        wdlat: ''
+      }]
     }
     //console.log(this.props.navigation.state.params.data);
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -150,6 +175,49 @@ export default class NewSite extends Component {
       dateComponentArray: dateComponent
     })
     console.log(this.state.dateComponentArray);
+  }
+  addPoint = () => {
+    const points = this.state.points;
+    const newPoints = points.concat({
+      id: "point" + (points.length),
+      num: points.length,
+      jdlong: '',
+      wdlat: ''
+    })
+    this.setState({
+      points: newPoints
+    })
+  }
+  deletePoint = (pointID) => {
+    const points = this.state.points;
+    const newPoints = points.filter(item => {
+      return item.id !== pointID;
+    })
+    this.setState({
+      points: newPoints
+    });
+  }
+  pointJDchange = (text, pointID) => {
+    const points = this.state.points;
+    points.forEach(item => {
+      if (item.id === pointID) {
+        item.jdlong = text;
+      }
+    });
+    this.setState({
+      points: points
+    })
+  }
+  pointWDchange = (text, pointID) => {
+    const points = this.state.points;
+    points.forEach(item => {
+      if (item.id === pointID) {
+        item.wdlat = text;
+      }
+    });
+    this.setState({
+      points: points
+    })
   }
   render() {
     return (
@@ -279,36 +347,20 @@ export default class NewSite extends Component {
                 value={this.state.liscense_person}
                 onChangeText={(text) => { this.setState({ liscense_person: text }) }}
               />
-              <View style={styles.coordinate}>
-                <View style={styles.itemCoor}>
-                  <Fumi
-                    keyboardType={'numeric'}
-                    label={'经度'}
-                    labelStyle={{ color: '#a3a3a3' }}
-                    inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
-                    iconClass={FontAwesomeIcon}
-                    iconName={'university'}
-                    iconColor={'#0079cc'}
-                    iconSize={15}
-                    value={this.state.longitude}
-                    onChangeText={(text) => { this.setState({ longitude: text }) }}
+              {
+                this.state.points.map((a, i) => {
+                  return <CoordinateComponent key={i}
+                    longitude={a.jdlong}
+                    latitude={a.wdlat}
+                    pointID={a.id}
+                    num={a.num}
+                    addComponent={this.addPoint}
+                    deleteComponent={this.deletePoint}
+                    pointJDchange={this.pointJDchange}
+                    pointWDchange={this.pointWDchange}
                   />
-                </View>
-                <View style={styles.itemCoor}>
-                  <Fumi
-                    keyboardType={'numeric'}
-                    label={'纬度'}
-                    labelStyle={{ color: '#a3a3a3' }}
-                    inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
-                    iconClass={FontAwesomeIcon}
-                    iconName={'university'}
-                    iconColor={'#0079cc'}
-                    iconSize={15}
-                    value={this.state.latitude}
-                    onChangeText={(text) => { this.setState({ latitude: text }) }}
-                  />
-                </View>
-              </View>
+                })
+              }
               <Fumi
                 keyboardType={'numeric'}
                 label={'砂石资源矿业权出让收益征收（万元）'}
@@ -455,6 +507,12 @@ export default class NewSite extends Component {
         return item.timeStart + '~' + item.timeEnd
       }
     })
+    const pointsList = this.state.points.map(item => {
+      if (item.jdlong && item.wdlat) {
+        return [item.jdlong, item.wdlat].join(',')
+      }
+    })
+    console.log(pointsList.join(','));
     if (!flag) {
       return;
     }
@@ -462,11 +520,13 @@ export default class NewSite extends Component {
       this.alertHadnle('请输入许可期限');
       return;
     }
+    if (pointsList.length === 0) {
+      this.alertHadnle('请输入至少一组经纬度');
+      return;
+    }
     console.log('保存验证', flag, this.state);
-
     saveData.liscense_period = dateList.join(',');
-    saveData.coordinates = [longitude, latitude].join(',');
-    //console.log(saveData);
+    saveData.coordinates = pointsList.join(',');
     Loading.show();
     AsyncStorage.getItem('userInfo', (error, result) => {
       Object.assign(saveData, JSON.parse(result));
@@ -479,9 +539,7 @@ export default class NewSite extends Component {
       }).catch(err => {
         console.log(err);
       })
-
     })
-
   }
   transData = (data) => {
     this.setState({
@@ -549,11 +607,5 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginRight: 12
   },
-  coordinate: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  itemCoor: {
-    flex: 1,
-  }
+
 }) 
