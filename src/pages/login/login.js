@@ -7,7 +7,7 @@ import Orientation from 'react-native-orientation';
 import { Toast } from '../../base/Toast';
 import { Loading } from '../../base/Loading';
 import { fetchRequest } from '../../services/httpServices';
-import localStorage from '../../services/StorageTools';
+
 import Button from '../../base/Button';
 
 export default class Login extends Component {
@@ -25,6 +25,17 @@ export default class Login extends Component {
   }
   componentWillMount() {
     Orientation.lockToLandscape();
+  }
+  componentDidMount() {
+    this.directToLogin();
+  }
+  directToLogin = async () => {
+    const value = await AsyncStorage.getItem('userInfo');
+    if (!value) return false;
+    const userData = JSON.parse(value);
+    if (userData.username && userData.password) {
+      this.setState({ showCancel: true });
+    }
   }
   login = () => {
     if (!this.state.username || !this.state.password) {
@@ -49,7 +60,7 @@ export default class Login extends Component {
   _storeData = async (res) => {
     const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = res;
     try {
-      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid }));
+      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid, username: this.state.username, password: this.state.password }));
     } catch (error) {
       console.log(error);
     }
@@ -57,9 +68,8 @@ export default class Login extends Component {
   }
   toA = async () => {
     const value = await AsyncStorage.getItem('userInfo');
-    //console.log(value);
     if (value) {
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('HomeNav');
     }
   }
   toB = async () => {
@@ -76,7 +86,7 @@ export default class Login extends Component {
       return (
         <ImageBackground source={require('../../assets/img/bg.jpg')} style={styles.container}>
           <View style={styles.inner}>
-            <Text style={styles.title}>湖北省河道采砂违法案件管理信息系统</Text>
+            <Text style={styles.title}>湖北省河道采砂管理信息系统</Text>
             <View>
               <TextInput style={[styles.input, styles.username]}
                 placeholder="请输入用户名"
@@ -106,7 +116,7 @@ export default class Login extends Component {
             <Text style={styles.title}>入口选择</Text>
           </View>
           <View style={styles.inner}>
-            <Button text="湖北省河道采砂规划与许可统计项目监管信息系统" onPress={this.toA}></Button>
+            <Button text="湖北省河道采砂规划与许可后项目监管信息系统" onPress={this.toA}></Button>
           </View>
           <View style={styles.inner}>
             <Button text="湖北省河道采砂违法案件管理系统" onPress={this.toB}></Button>

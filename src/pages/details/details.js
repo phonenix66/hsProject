@@ -40,6 +40,11 @@ export default class DetailsScreen extends React.Component {
 
   render() {
     let data = this.state.data;
+    const coordinates = data.coordinates.split(',');
+    const result = [];
+    for (let i = 0, len = coordinates.length; i < len; i += 2) {
+      result.push(coordinates.slice(i, i + 2));
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -81,8 +86,14 @@ export default class DetailsScreen extends React.Component {
             <Text style={[styles.text, styles.txtLeft]}>{data.liscense_person}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.text, styles.txtRight]}>坐标</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.coordinates}</Text>
+            <Text style={[styles.coorsWrap, styles.txtRight]}>坐标</Text>
+            <View style={styles.coorsWrap}>
+              {
+                result.map((item, index) => {
+                  return <Text style={styles.coorsStyle} key={index}>{item.join(',')}</Text>
+                })
+              }
+            </View>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>砂石资源矿业权出让收益征收（万元）</Text>
@@ -101,7 +112,7 @@ export default class DetailsScreen extends React.Component {
             <Text style={[styles.text, styles.txtLeft]}>{data.person}：{data.phone}</Text>
           </View>
         </ScrollView>
-      </View>
+      </View >
     )
   }
 }
@@ -141,9 +152,25 @@ const styles = StyleSheet.create({
   txtRight: {
     textAlign: 'right',
     paddingRight: 12,
+    fontSize: 10
   },
   txtLeft: {
     textAlign: 'left',
     paddingLeft: 12,
+  },
+  coorsWrap: {
+    flex: 1,
+    borderRightWidth: 1,
+    borderRightColor: '#e2e2e2',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e2e2',
+    paddingRight: 12,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  coorsStyle: {
+    flex: 1,
+    paddingLeft: 12,
+    fontSize: 10
   }
 })

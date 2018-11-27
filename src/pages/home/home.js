@@ -1,10 +1,9 @@
 import React from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  Dimensions, FlatList, Image, Alert, AsyncStorage
+  FlatList, Image, Alert, AsyncStorage
 } from 'react-native';
 import { fetchRequest } from '../../services/httpServices';
-import moment from 'moment';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Loading } from '../../base/Loading';
@@ -64,18 +63,37 @@ export default class HomeScreen extends React.Component {
     return item.index.toString()
   }
   transDetails = (item) => {
-    if (!item) return;
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
+    }
     this.props.navigation.navigate('Details', {
       data: item
     });
   }
   transNewSite = (flag) => {
-    this.props.navigation.navigate('NewSite', {
-      getSaveData: this.getSaveData.bind(this),
-      data: !flag ? this.state.selectItem : null
-    });
+    if (flag) {
+      this.props.navigation.navigate('NewSite', {
+        getSaveData: this.getSaveData.bind(this),
+        data: null
+      });
+    } else {
+      if (!this.state.selectItem) {
+        this.alertTips();
+        return;
+      }
+      this.props.navigation.navigate('NewSite', {
+        getSaveData: this.getSaveData.bind(this),
+        data: this.state.selectItem
+      });
+    }
+
   }
   deleteItem = () => {
+    if (!this.state.selectItem) {
+      this.alertTips();
+      return;
+    }
     const itemId = this.state.selectItem.permissionid;
     AsyncStorage.getItem("userInfo", (error, result) => {
       const opts = {
@@ -112,9 +130,15 @@ export default class HomeScreen extends React.Component {
           ]
         )
       }
-
     })
-
+  }
+  alertTips() {
+    Alert.alert(
+      '提示',
+      '请先选择一条许可项',
+      [
+        { text: '确定', onPress: () => { } }
+      ]);
   }
   /*保存返回调用*/
   getSaveData(value) {
@@ -161,7 +185,6 @@ export default class HomeScreen extends React.Component {
                 </View>)
               })
             }
-
           </View>
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.ship_name || ''}</Text>
@@ -282,7 +305,6 @@ export default class HomeScreen extends React.Component {
               />
             })
           }
-
         </View>
         <View style={styles.footer}>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 3 }]}>
@@ -291,7 +313,7 @@ export default class HomeScreen extends React.Component {
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 2 }]}>
             <Text style={[styles.bItem, styles.textBlue]}>{this.state.total || 0}</Text>
           </View>
-          <View style={[styles.textWrap, styles.textViewWrap, { flex: 6 }]}>
+          <View style={[styles.textWrap, styles.textViewWrap, { flex: 7 }]}>
             <Text style={[styles.bItem, styles.textBlue]}>砂石资源矿业权出让收益征收（万元）总值</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 2 }]}>

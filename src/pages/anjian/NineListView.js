@@ -47,7 +47,7 @@ class NineListView extends Component {
         onPress={() => this.goToPage(rowData.name)}
         style={styles.itemContainer}
       >
-        <View>
+        <View style={styles.wrapItem}>
           <Image
             source={{ uri: rowData.icon }}
             style={{ width: 70, height: 70 }}
@@ -80,8 +80,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     fontFamily: 'bold'
+  },
+  wrapItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
-
 
 export { NineListView };

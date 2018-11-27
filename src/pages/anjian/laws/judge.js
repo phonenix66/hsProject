@@ -1,8 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
 import Orientation from 'react-native-orientation';
 import PhotoView from 'react-native-photo-view';
-
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 export default class JudgePage extends Component {
@@ -28,9 +27,6 @@ export default class JudgePage extends Component {
       )
     }
   }
-  componentDidMount() {
-
-  }
   constructor(props) {
     super(props);
     Orientation.lockToLandscape();
@@ -39,7 +35,7 @@ export default class JudgePage extends Component {
     return (
       <PhotoView
         source={require('../../../assets/img/biaozhun.jpg')}
-        minimumZoomScale={0.5}
+        minimumZoomScale={1}
         maximumZoomScale={4}
         androidScaleType="centerInside"
         onLoad={() => console.log("Image loaded!")}
@@ -57,14 +53,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 10,
   },
-  imgStyle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
   backgroundImage: {
     flex: 1,
-    width: null,
+    width: width,
     height: null
   }
 })
