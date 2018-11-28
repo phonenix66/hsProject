@@ -2,8 +2,7 @@
 //const baseUrl = 'http://219.140.162.169:8850/sand/';
 //const baseUrl = 'http://10.6.181.55:8012/SPCRM/';
 const baseUrl = 'http://223.75.53.24:8861/SPCRM/';
-const token = '';
-
+//const baseUrl = 'http://223.75.53.24:8860/sand/';
 /**
  * @param {string} serviceName 接口地址
  * @param {string} method 请求方法：GET、POST，只能大写

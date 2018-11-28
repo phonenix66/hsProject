@@ -322,7 +322,7 @@ export default class HomeScreen extends React.Component {
         </View>
         {/* Rest of the app comes ABOVE the action button component !*/}
         <ActionButton buttonColor="rgba(231,76,60,1)"
-          size={30} active={this.state.showAction}
+          size={40} active={this.state.showAction}
           resetToken={() => this.resetActionButton()}
           position="right"
           onReset={() => this.resetActionButton()}

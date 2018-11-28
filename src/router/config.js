@@ -17,15 +17,23 @@ import BlackDetailsPage from '../pages/anjian/black/blackItemDetail';
 import SuperviseDetailsPage from '../pages/anjian/supervise/superviseDetail';
 import ImageViewerPage from '../pages/anjian/supervise/imageViewer';
 import HomeNavPage from '../pages/home/homeNav';
+import PlanProjectPage from '../pages/home/planProject';
+import PlanDetailsPage from '../pages/home/planDetails';
 const router = {
   Login: {
     screen: Login
   },
-  Home: {
-    screen: HomeScreen
-  },
   HomeNav: {
     screen: HomeNavPage
+  },
+  Home: {  //许可证
+    screen: HomeScreen
+  },
+  PlanProject: {
+    screen: PlanProjectPage
+  },
+  planDetails: {
+    screen: PlanDetailsPage
   },
   Main: {
     screen: MainPage
