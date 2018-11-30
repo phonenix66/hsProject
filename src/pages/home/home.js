@@ -51,7 +51,6 @@ export default class HomeScreen extends React.Component {
   }
 
   showActionSelect = (item) => {
-    console.log(item);
     this.setState(prevState => {
       return {
         selectItem: item,
@@ -173,7 +172,7 @@ export default class HomeScreen extends React.Component {
           <View style={[styles.textWrap, styles.textViewWrap]}>
             <Text style={styles.bItem}>{item.liscense_production || ''}
               {
-                (item.liscense_production_type === 1) ? '吨' : '立方米'
+                (item.liscense_production_type === 1) ? '万吨' : '立方米'
               }
             </Text>
           </View>
@@ -217,14 +216,14 @@ export default class HomeScreen extends React.Component {
         "idpath": "",
         "firstorgid": "",
         "firstorgidpath": "",
-        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId + "",
-        "nativePlaceCityId": this.state.storage.nativePlaceCityId + "",
-        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId + "",
+        "nativePlaceProvinceId": this.state.storage.nativePlaceProvinceId,
+        "nativePlaceCityId": this.state.storage.nativePlaceCityId,
+        "nativePlaceCountyId": this.state.storage.nativePlaceCountyId,
         "admindivname": this.state.storage.admindivname,
         "roleid": this.state.storage.roleid
       })
         .then(res => {
-          console.log(res);
+          if (res.status === -1) return;
           const data = res.row.map((item, i) => {
             item.index = i + 1;
             return item;
@@ -256,7 +255,6 @@ export default class HomeScreen extends React.Component {
     })
   }
   _getRefs = (r) => {
-    console.log(r);
     this.setState({ PL: r })
   }
   render() {
@@ -308,7 +306,7 @@ export default class HomeScreen extends React.Component {
         </View>
         <View style={styles.footer}>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 3 }]}>
-            <Text style={[styles.bItem, styles.textBlue]}>许可采量（万吨/m³）总值</Text>
+            <Text style={[styles.bItem, styles.textBlue]}>许可采量（万吨）总值</Text>
           </View>
           <View style={[styles.textWrap, styles.textViewWrap, { flex: 2 }]}>
             <Text style={[styles.bItem, styles.textBlue]}>{this.state.total || 0}</Text>

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, TouchableOpacity, Image, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Text, AsyncStorage } from 'react-native';
 import PageListView from 'react-native-page-listview';
 import Orientation from 'react-native-orientation';
+import { fetchRequest } from '../../services/httpServices';
 export default class PlanProjectPage extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
@@ -38,6 +39,7 @@ export default class PlanProjectPage extends Component {
     this.setState({
       selectItem: item
     });
+    console.log(item);
     this.props.navigation.navigate('PlanDetails', {
       data: item
     })
@@ -51,12 +53,13 @@ export default class PlanProjectPage extends Component {
       <TouchableOpacity onPressOut={() => { this.showActionSelect(item) }}>
         <View style={[styles.top, styles.itemBg, (this.state.selectItem && this.state.selectItem.fid === item.fid) ? styles.selected : null]} >
           <View style={[styles.textWrap, styles.textIndex]}>
-            <Text style={styles.bItem}>{index + 1}</Text>
+            <Text style={styles.bItem}>{item.index}</Text>
           </View>
-          <View style={styles.textWrap}>{item.planName}</View>
-          <View style={styles.textWrap}>{item.rivername}</View>
-          <View style={styles.textWrap}>{item.planperiod}</View>
-          <View style={styles.textWrap}>{item.yearcatchsum}</View>
+          <View style={styles.textWrap}>
+            <Text style={styles.bItem}>{item.planName}</Text></View>
+          <View style={styles.textWrap}><Text style={styles.bItem}>{item.rivername}</Text></View>
+          <View style={styles.textWrap}><Text style={styles.bItem}>{item.planperiod}</Text></View>
+          <View style={styles.textWrap}><Text style={styles.bItem}>{item.yearcatchsum}</Text></View>
         </View>
       </TouchableOpacity>
     )
@@ -67,12 +70,12 @@ export default class PlanProjectPage extends Component {
         storage: JSON.parse(result)
       });
       console.log("规划项目管理===>", JSON.parse(result));
-      const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid } = this.state.storage;
-      fetchRequest('PlanSandHandlerController/getList', 'POST', {
-        employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid
+      const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = this.state.storage;
+      fetchRequest('rest/ShowPlanFListJson', 'POST', {
+        employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid
       })
         .then(res => {
-          //console.log(res);
+          if (res.status === -1) return;
           const data = res.row.map((item, i) => {
             item.index = i + 1;
             return item;
@@ -86,7 +89,7 @@ export default class PlanProjectPage extends Component {
   }
   _loadMore = (page = 2, callBack) => {
     const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid } = this.state.storage;
-    fetchRequest('rest/getBlackListJson', 'POST', {
+    fetchRequest('rest/ShowPlanFListJson', 'POST', {
       employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyIdadmindivname, roleid
     }).then(res => {
       if (res.status === 0) {
@@ -128,7 +131,8 @@ export default class PlanProjectPage extends Component {
             pageLen="1500"
             extraData={this.state}
             renderRow={this._renderList}
-
+            refresh={this._refresh}
+            loadMore={this._loadMore}
           >
           </PageListView>
         </View>
@@ -160,6 +164,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     backgroundColor: '#e0ebfd'
+  },
+  body: {
+    flex: 1,
+  },
+  textViewWrap: {
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#e2e2e2'
   },
   textIndex: {
     flex: 1

@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, BackHandler, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
-import moment from 'moment';
+import { View, Text, StyleSheet, BackHandler, Dimensions, TouchableOpacity, Image, ScrollView } from 'react-native';
 const width = Dimensions.get('window').width;
 
 export default class DetailsScreen extends React.Component {
@@ -45,12 +44,28 @@ export default class DetailsScreen extends React.Component {
     for (let i = 0, len = coordinates.length; i < len; i += 2) {
       result.push(coordinates.slice(i, i + 2));
     }
+    const coordPlaceAction = new Map([
+      [1, ['北京54']],
+      [2, ['西安80']],
+      [3, ['大地2000']],
+      [4, ['WGS-84']]
+    ]);
+    const benifitType = new Map([
+      [1, ['A招标']],
+      [2, ['B拍卖']],
+      [3, ['C挂牌']],
+      [4, ['D协议转让']]
+    ])
     return (
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>采砂项目名称</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.sandpro_name}</Text>
+          </View>
+          <View style={styles.lineItem}>
+            <Text style={[styles.text, styles.txtRight]}>许可单位</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.permission_dept}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>河流名称</Text>
@@ -62,7 +77,7 @@ export default class DetailsScreen extends React.Component {
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可采量（万吨/m³）</Text>
-            <Text style={[styles.text, styles.txtLeft]}>{data.liscense_production}</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{data.liscense_production}{data.liscense_production_type === 1 ? '万吨' : 'm³'}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>许可具体地点</Text>
@@ -86,6 +101,10 @@ export default class DetailsScreen extends React.Component {
             <Text style={[styles.text, styles.txtLeft]}>{data.liscense_person}</Text>
           </View>
           <View style={styles.lineItem}>
+            <Text style={[styles.text, styles.txtRight]}>坐标系</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{coordPlaceAction.get(data.coordplace)}</Text>
+          </View>
+          <View style={styles.lineItem}>
             <Text style={[styles.coorsWrap, styles.txtRight]}>坐标</Text>
             <View style={styles.coorsWrap}>
               {
@@ -98,6 +117,10 @@ export default class DetailsScreen extends React.Component {
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>砂石资源矿业权出让收益征收（万元）</Text>
             <Text style={[styles.text, styles.txtLeft]}>{data.benifit}</Text>
+          </View>
+          <View style={styles.lineItem}>
+            <Text style={[styles.text, styles.txtRight]}>出让方式</Text>
+            <Text style={[styles.text, styles.txtLeft]}>{benifitType.get(data.benifit_type)}</Text>
           </View>
           <View style={styles.lineItem}>
             <Text style={[styles.text, styles.txtRight]}>现场监管单位（自动）</Text>

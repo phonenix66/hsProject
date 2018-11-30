@@ -64,7 +64,10 @@ export default class NewSite extends Component {
       liscense_period: '',
       dateComponentArray: [],
       points: [],
-      permissionid: this.navParams ? (this.navParams.permissionid + '') : "0" //新增更新id
+      permissionid: this.navParams ? (this.navParams.permissionid + '') : "0", //新增更新id,
+      benifitType: this.navParams ? this.navParams.benifit_type + '' : '1',
+      permissionDept: this.navParams ? this.navParams.permission_dept : '',
+      coordPlace: this.navParams ? this.navParams.coordplace + '' : '1'
     }
     if (this.navParams && this.navParams.liscense_period) {
       const liscense_period = this.navParams.liscense_period.split(',');
@@ -237,6 +240,17 @@ export default class NewSite extends Component {
                 onChangeText={(text) => { this.setState({ sandpro_name: text }) }}
               />
               <Fumi
+                label={'许可单位'}
+                labelStyle={{ color: '#a3a3a3' }}
+                inputStyle={{ color: '#000000', borderBottomWidth: 1, borderColor: '#a3a3a3', }}
+                iconClass={FontAwesomeIcon}
+                iconName={'university'}
+                iconColor={'#0079cc'}
+                iconSize={15}
+                value={this.state.permissionDept}
+                onChangeText={(text) => { this.setState({ permissionDept: text }) }}
+              />
+              <Fumi
                 style={styles.input}
                 label={'河流名称'}
                 labelStyle={{ color: '#a3a3a3' }}
@@ -280,7 +294,7 @@ export default class NewSite extends Component {
                     selectedValue={this.state.liscense_production_type}
                     style={{ height: 40, width: '100%' }}
                     onValueChange={(itemValue, itemIndex) => this.setState({ liscense_production_type: itemValue })}>
-                    <Picker.Item label="吨" value="1" />
+                    <Picker.Item label="万吨" value="1" />
                     <Picker.Item label="立方米" value="0" />
                   </Picker>
                 </View>
@@ -347,6 +361,22 @@ export default class NewSite extends Component {
                 value={this.state.liscense_person}
                 onChangeText={(text) => { this.setState({ liscense_person: text }) }}
               />
+              <View style={styles.pickerWrap}>
+                <View style={styles.pickerTxt}>
+                  <Text>坐标系选择</Text>
+                </View>
+                <View style={styles.pickerSelect}>
+                  <Picker
+                    selectedValue={this.state.coordPlace}
+                    style={{ height: 40, width: '100%' }}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ coordPlace: itemValue })}>
+                    <Picker.Item label="北京54" value="1" />
+                    <Picker.Item label="西安80" value="2" />
+                    <Picker.Item label="大地2000" value="3" />
+                    <Picker.Item label="WGS-84" value="4" />
+                  </Picker>
+                </View>
+              </View>
               {
                 this.state.points.map((a, i) => {
                   return <CoordinateComponent key={i}
@@ -373,6 +403,22 @@ export default class NewSite extends Component {
                 value={this.state.benifit}
                 onChangeText={(text) => { this.setState({ benifit: text }) }}
               />
+              <View style={styles.pickerWrap}>
+                <View style={styles.pickerTxt}>
+                  <Text>出让方式</Text>
+                </View>
+                <View style={styles.pickerSelect}>
+                  <Picker
+                    selectedValue={this.state.benifitType}
+                    style={{ height: 40, width: '100%' }}
+                    onValueChange={(itemValue, itemIndex) => this.setState({ benifitType: itemValue })}>
+                    <Picker.Item label="A招标" value="1" />
+                    <Picker.Item label="B拍卖" value="2" />
+                    <Picker.Item label="C挂牌" value="3" />
+                    <Picker.Item label="D协议出让" value="4" />
+                  </Picker>
+                </View>
+              </View>
               <Fumi
                 label={'现场监管单位'}
                 labelStyle={{ color: '#a3a3a3' }}
@@ -482,7 +528,7 @@ export default class NewSite extends Component {
       ]);
   }
   saveHandle = () => {
-    const { sandpro_name, river_name, permissionCard_no, liscense_production, liscense_production_type, perm_place, ship_name, sand_extraction_power, liscense_person, benifit, department, person, phone, dateComponentArray, coordinates, longitude, latitude, permissionid } = this.state;
+    const { sandpro_name, river_name, permissionCard_no, liscense_production, liscense_production_type, perm_place, ship_name, sand_extraction_power, liscense_person, benifit, department, person, phone, dateComponentArray, coordinates, permissionid, benifitType, coordPlace, permissionDept } = this.state;
     const saveData = {
       sandpro_name,
       river_name,
@@ -498,7 +544,10 @@ export default class NewSite extends Component {
       person,
       phone,
       coordinates,
-      permissionid
+      permissionid,
+      benifitType: parseInt(benifitType),
+      coordPlace: parseInt(coordPlace),
+      permissionDept
     }
 
     const flag = this.validateItem(this.state);

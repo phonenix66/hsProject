@@ -50,8 +50,13 @@ export default class Login extends Component {
       //console.log(res);
       if (res.status === 0) {
         Loading.hidden();
-        this._storeData(res);
+        this._storeData(res).then((value) => {
+          console.log(value, 123);
+        });
         this.setState({ showCancel: true });
+      } else {
+        Loading.hidden();
+        Toast.show('登录失败');
       }
     }).catch(err => {
       console.log(err);
@@ -60,23 +65,45 @@ export default class Login extends Component {
   _storeData = async (res) => {
     const { employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid } = res;
     try {
-      await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid, username: this.state.username, password: this.state.password }));
+      const va = await AsyncStorage.setItem("userInfo", JSON.stringify({ employeeName, nativePlaceProvinceId, nativePlaceCityId, nativePlaceCountyId, admindivname, roleid, username: this.state.username, password: this.state.password }));
+
     } catch (error) {
       console.log(error);
     }
-
   }
   toA = async () => {
-    const value = await AsyncStorage.getItem('userInfo');
-    if (value) {
-      this.props.navigation.navigate('HomeNav');
+    try {
+      const value = await AsyncStorage.getItem('userInfo');
+      console.log(value);
+      if (value) {
+        this.props.navigation.navigate('HomeNav');
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
   toB = async () => {
-    const value = await AsyncStorage.getItem('userInfo');
-    if (!value) return;
-    console.log("b", value);
-    this.props.navigation.navigate('Main');
+    try {
+      const value = await AsyncStorage.getItem('userInfo');
+      if (!value) return;
+      console.log("b", value);
+      this.props.navigation.navigate('Main');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  logout = async () => {
+    try {
+      await AsyncStorage.removeItem('userInfo').then(() => {
+        this.setState({
+          showCancel: false,
+          username: '',
+          password: ''
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
   render() {
     return this._renderCance();
@@ -120,6 +147,9 @@ export default class Login extends Component {
           </View>
           <View style={styles.inner}>
             <Button text="湖北省河道采砂违法案件管理系统" onPress={this.toB}></Button>
+          </View>
+          <View style={styles.inner}>
+            <Button text="退出系统" onPress={this.logout}></Button>
           </View>
         </ImageBackground>
       );

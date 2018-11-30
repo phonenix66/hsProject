@@ -19,6 +19,7 @@ import ImageViewerPage from '../pages/anjian/supervise/imageViewer';
 import HomeNavPage from '../pages/home/homeNav';
 import PlanProjectPage from '../pages/home/planProject';
 import PlanDetailsPage from '../pages/home/planDetails';
+import PlanInfosPage from '../pages/home/planInfos';
 const router = {
   Login: {
     screen: Login
@@ -32,8 +33,11 @@ const router = {
   PlanProject: {
     screen: PlanProjectPage
   },
-  planDetails: {
+  PlanDetails: {
     screen: PlanDetailsPage
+  },
+  Infos: {
+    screen: PlanInfosPage
   },
   Main: {
     screen: MainPage
