@@ -130,20 +130,21 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    flex: 1,
     lineHeight: 34,
     borderRightWidth: 1,
     borderRightColor: '#e2e2e2',
     borderBottomWidth: 1,
     borderBottomColor: '#e2e2e2',
     height: 34,
-    fontSize: 10
+    fontSize: 12
   },
   txtRight: {
-    textAlign: 'right',
-    paddingRight: 12,
+    flex: 1,
+    textAlign: 'left',
+    paddingLeft: 12,
   },
   txtLeft: {
+    flex: 2,
     textAlign: 'left',
     paddingLeft: 12,
   }

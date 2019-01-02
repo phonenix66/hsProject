@@ -84,8 +84,8 @@ export default class PlanInfosPage extends Component {
             <Text style={[styles.text, styles.txtLeft]}>{coordPlaceAction.get(data.coordPlace)}</Text>
           </View>
           <View style={styles.lineItem}>
-            <Text style={[styles.coorsWrap, styles.txtRight]}>坐标</Text>
-            <View style={styles.coorsWrap}>
+            <Text style={[styles.coorsWrap, { fontSize: 12 }]}>坐标</Text>
+            <View style={[styles.coorsWrap, { flex: 2 }]}>
               {
                 result.map((item, index) => {
                   return <Text style={styles.coorsStyle} key={index}>{item.join(',')}</Text>
@@ -123,21 +123,22 @@ const styles = StyleSheet.create({
 
   },
   text: {
-    flex: 1,
     lineHeight: 34,
     borderRightWidth: 1,
     borderRightColor: '#e2e2e2',
     borderBottomWidth: 1,
     borderBottomColor: '#e2e2e2',
     height: 34,
-    fontSize: 10
+    fontSize: 12
   },
   txtRight: {
-    textAlign: 'right',
-    paddingRight: 12,
+    flex: 1,
+    textAlign: 'left',
+    paddingLeft: 12,
     fontSize: 10
   },
   txtLeft: {
+    flex: 2,
     textAlign: 'left',
     paddingLeft: 12,
   },
@@ -147,13 +148,12 @@ const styles = StyleSheet.create({
     borderRightColor: '#e2e2e2',
     borderBottomWidth: 1,
     borderBottomColor: '#e2e2e2',
-    paddingRight: 12,
+    paddingLeft: 12,
     justifyContent: 'center',
     alignContent: 'center',
   },
   coorsStyle: {
     flex: 1,
-    paddingLeft: 12,
     fontSize: 10
   }
 })

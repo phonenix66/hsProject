@@ -225,7 +225,7 @@ export default class CaseListPage extends Component {
 
         </View>
         <ActionButton buttonColor="rgba(231,76,60,1)"
-          size={30} active={this.state.showAction} position="right"
+          size={40} active={this.state.showAction} position="right"
           offsetX={10} offsetY={20} spacing={6}
           resetToken={() => this.resetActionButton()}
           onReset={() => this.resetActionButton()}>
